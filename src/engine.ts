@@ -12,6 +12,7 @@ import {
   createImageTexture,
   createPass,
   createTarget,
+  deleteTarget,
   type Pass,
   type Target
 } from './gl'
@@ -43,13 +44,15 @@ const BLOOM_LEVELS = 6
 export class Engine {
   readonly gl: WebGL2RenderingContext
   film: Film
-  readonly width: number
-  readonly height: number
+  /** the drawing size in pixels (resize() changes it) */
+  width: number
+  height: number
 
   private assets: ShotAssets[] = []
   private params: Params[]
-  private color: Target
-  private accum: Target
+  private readonly canvas: HTMLCanvasElement
+  private color!: Target
+  private accum!: Target
   private bloom: Target[] = []
   private bloomUp: Target[] = []
   private passes: Record<string, Pass>
@@ -63,6 +66,7 @@ export class Engine {
     opts: EngineOptions
   ) {
     this.film = film
+    this.canvas = canvas
     this.width = opts.width
     this.height = opts.height
     canvas.width = opts.width
@@ -70,7 +74,19 @@ export class Engine {
     const gl = createContext(canvas, opts.preserveDrawingBuffer)
     this.gl = gl
     this.params = film.shots.map(paramsFor)
+    this.allocate()
+    this.passes = {
+      optics: createPass(gl, OPTICS),
+      copy: createPass(gl, COPY),
+      down: createPass(gl, DOWNSAMPLE),
+      up: createPass(gl, UPSAMPLE),
+      finish: createPass(gl, FINISH)
+    }
+  }
 
+  /** the frame-sized targets: the picture, the subframe accumulation, the bloom chain */
+  private allocate() {
+    const gl = this.gl
     this.color = createTarget(gl, this.width, this.height, {
       format: 'rgba32f'
     })
@@ -78,6 +94,8 @@ export class Engine {
       format: 'rgba32f',
       filter: 'linear'
     })
+    this.bloom = []
+    this.bloomUp = []
     let w = this.width
     let h = this.height
     for (let i = 0; i < BLOOM_LEVELS; i++) {
@@ -91,13 +109,20 @@ export class Engine {
           createTarget(gl, w, h, { format: 'rgba16f', filter: 'linear' })
         )
     }
-    this.passes = {
-      optics: createPass(gl, OPTICS),
-      copy: createPass(gl, COPY),
-      down: createPass(gl, DOWNSAMPLE),
-      up: createPass(gl, UPSAMPLE),
-      finish: createPass(gl, FINISH)
-    }
+  }
+
+  /** changes the drawing size: the canvas and every frame-sized target */
+  resize(width: number, height: number) {
+    width = Math.max(1, Math.round(width))
+    height = Math.max(1, Math.round(height))
+    if (width === this.width && height === this.height) return
+    for (const t of [this.color, this.accum, ...this.bloom, ...this.bloomUp])
+      deleteTarget(this.gl, t)
+    this.width = width
+    this.height = height
+    this.canvas.width = width
+    this.canvas.height = height
+    this.allocate()
   }
 
   static async create(
@@ -174,15 +199,16 @@ export class Engine {
 
   /**
    * Renders film time t to the canvas. The dither (the spectrum's sample offsets, grain) is seeded
-   * by subframe alone, so a frame is a pure function of t and a still picture stays still.
+   * by subframe alone, so a frame is a pure function of t and a still picture stays still. Live
+   * playback may ask for fewer subframes than the shot's.
    */
-  render(t: number) {
+  render(t: number, { subframes }: { subframes?: number } = {}) {
     const gl = this.gl
     const index = this.shotIndexAt(t)
     const shot = this.film.shots[index]!
     const p = this.params[index]!
     const a = this.assets[index]!
-    const K = Math.max(1, Math.round(p.subframes))
+    const K = Math.max(1, Math.round(subframes ?? p.subframes))
     const open = p.shutter / this.film.fps
 
     clearTarget(gl, this.accum)

@@ -8,6 +8,7 @@ import { PlaybackClock } from './clock'
 import type { Engine } from './engine'
 import { exportMp4 } from './export'
 import { createPanel } from './panel'
+import { drawingSize } from './resolution'
 import type { Film } from './scene'
 import type { Timeline } from './timeline'
 
@@ -40,11 +41,56 @@ export function createPlayer(
     canvas.style.width = `${Math.round(h * aspect)}px`
     canvas.style.height = `${Math.round(h)}px`
   }
-  new ResizeObserver(fit).observe(stage)
+  new ResizeObserver(() => {
+    fit()
+    redraw()
+  }).observe(stage)
   fit()
 
   let shown = -1
+  /** whether the frame on screen was drawn at full quality (a paused frame always is) */
+  let sharp = false
   const redraw = () => (shown = -1)
+
+  // Quality while playing, in steps from full: fewer motion-blur subframes first, then fewer
+  // pixels. It steps down when frames fall behind the film's frame rate and back up when there's
+  // room, so any GPU plays smoothly; a paused frame always renders at full quality.
+  const LEVELS: readonly [scale: number, subframes: number | undefined][] = [
+    [1, undefined],
+    [1, 4],
+    [0.8, 4],
+    [0.65, 4],
+    [0.5, 3],
+    [0.4, 2]
+  ]
+  let level = 0
+  let frameMs = 0
+  let last = 0
+  let calm = 0
+  const sizeFor = (scale: number) => {
+    const [w, h] = drawingSize(canvas, { scale, aspect })
+    // resizing reallocates the frame's targets: skip changes too small to see
+    if (
+      Math.abs(w - engine.width) / engine.width > 0.04 ||
+      Math.abs(h - engine.height) / engine.height > 0.04
+    )
+      engine.resize(w, h)
+  }
+  const adapt = (now: number) => {
+    if (last)
+      frameMs = frameMs ? frameMs * 0.85 + (now - last) * 0.15 : now - last
+    last = now
+    const budget = 1000 / fps
+    if (frameMs > budget * 1.25 && level < LEVELS.length - 1) {
+      level++
+      frameMs = 0
+      calm = 0
+    } else if (frameMs && frameMs < budget * 0.6 && level > 0 && ++calm > 48) {
+      level--
+      frameMs = 0
+      calm = 0
+    }
+  }
 
   const replaceLogo = async (shotName: string, file: File) => {
     const index = engine.film.shots.findIndex((s) => s.name === shotName)
@@ -148,18 +194,30 @@ export function createPlayer(
     }
   })
 
-  const tick = () => {
+  const tick = (now: number) => {
     requestAnimationFrame(tick)
     if (exporting) return
     const t = clock.time()
-    // paused on the same time: nothing to redraw
-    if (t !== shown || clock.playing) {
-      engine.render(t)
+    if (clock.playing) {
+      adapt(now)
+      const [scale, subframes] = LEVELS[level]!
+      sizeFor(scale)
+      engine.render(t, { subframes })
       shown = t
+      sharp = level === 0
+    } else {
+      last = 0
+      // paused: draw the frame once, at full quality
+      if (t !== shown || !sharp) {
+        sizeFor(1)
+        engine.render(t)
+        shown = t
+        sharp = true
+      }
     }
     play.textContent = clock.playing ? 'Pause' : 'Play'
     if (document.activeElement !== scrub) scrub.value = String(t)
     readout.textContent = `${t.toFixed(2)} / ${duration.toFixed(2)} s`
   }
-  tick()
+  requestAnimationFrame(tick)
 }

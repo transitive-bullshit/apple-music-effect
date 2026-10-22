@@ -7,6 +7,7 @@ import './explainer.css'
 import { startAnalytics } from './analytics'
 import { fitLogo } from './brand'
 import { Engine } from './engine'
+import { drawingSize } from './resolution'
 import { APPLE_MUSIC, type Film } from './scene'
 
 const DEMO: Record<string, string> = {
@@ -52,10 +53,21 @@ async function main() {
     })
   )
 
+  // each still figure draws at its size on screen, sharp at any pixel density, and again on resize
+  const aspect = film.aspect
   for (const { canvas, engine } of engines) {
     const t = Number(canvas.dataset.t ?? 0)
     if (canvas.dataset.loop) continue
-    engine.render(t)
+    const draw = () => {
+      engine.resize(...drawingSize(canvas, { aspect, maxPixels: 2560 * 1440 }))
+      engine.render(t)
+    }
+    let pending = 0
+    new ResizeObserver(() => {
+      cancelAnimationFrame(pending)
+      pending = requestAnimationFrame(draw)
+    }).observe(canvas)
+    draw()
     const toggle = canvas
       .closest('figure')
       ?.querySelector<HTMLInputElement>('input[data-toggle]')
@@ -70,7 +82,7 @@ async function main() {
         engine.setParams(i, {
           [name]: toggle.checked ? Number(toggle.dataset.off) : value
         })
-      engine.render(t)
+      draw()
     })
   }
 
@@ -81,11 +93,23 @@ async function main() {
   new IntersectionObserver(
     ([entry]) => (visible = entry!.isIntersecting)
   ).observe(hero.canvas)
+  // the loop runs behind the reading, so it draws lighter: at most 1.5 pixels per CSS pixel, and
+  // half the subframes
+  const heroScale = () => Math.min(1, 1.5 / (globalThis.devicePixelRatio || 1))
   const start = performance.now()
   const tick = (now: number) => {
     requestAnimationFrame(tick)
     if (!visible) return
-    hero.engine.render(((now - start) / 1000) % film.duration)
+    hero.engine.resize(
+      ...drawingSize(hero.canvas, {
+        scale: heroScale(),
+        aspect,
+        maxPixels: 2560 * 1440
+      })
+    )
+    hero.engine.render(((now - start) / 1000) % film.duration, {
+      subframes: 4
+    })
   }
   requestAnimationFrame(tick)
 }

@@ -59,8 +59,8 @@ __pycache__/
 .pytest_cache/
 /.claude/settings.local.json
 
-# copyrighted source audio and reference videos (never committed)
-/media
+# Apple's film, reel and logos, and the film's audio (never committed); the sting is, below
+/media/*
 /reference
 
 # derived outputs (regenerable from the pipeline)
@@ -83,3 +83,6 @@ __pycache__/
 *.mov
 *.webm
 *.mkv
+
+# the sting: the master the player, the site and every export play
+!/media/sting-reel.wav

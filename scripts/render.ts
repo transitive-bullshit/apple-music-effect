@@ -64,7 +64,7 @@ async function main() {
       ? args.out
       : path.join(args.out, `render-${from}-${to}.mp4`)
     await mkdir(path.dirname(out), { recursive: true })
-    // the sting isn't in git: without it in media/, the clip renders silent
+    // a timeline without a song (or a missing file) renders silent
     const song =
       timeline.audio && existsSync(timeline.audio) ? timeline.audio : null
     if (timeline.audio && !song)

@@ -2,7 +2,7 @@
 
 > A real-time recreation of the liquid logo animation from Apple Music's new identity: a physically based lens of oil, ray traced in the browser, that works with any logo.
 
-[![The demo brand: an equalizer icon under a lens of oil shaped like an app tile, and a wordmark under a round one](docs/preview.jpg)](explainer.html)
+[![The demo brand: the X logo under a lens of oil shaped like an app tile, and the handle @transitive_bs under a round one](docs/preview.webp)](https://apple-music-effect.vercel.app)
 
 Apple filmed its new mark in a tray of mineral oil, rippled by a two-note sting from Fred again.. and NEST Acoustics. This repo rebuilds the effect on the GPU: a dome of oil that magnifies the logo and smears its ends, animated by a few smooth curves fitted to Apple's film, and spectral ray tracing for the rainbow fringes.
 
@@ -30,7 +30,7 @@ onto it, and export a 1080p MP4. Read contributing.md for the render and compari
 
 ## License
 
-The code is [MIT](license) © [Travis Fischer](https://x.com/transitive_bs). This is an unofficial study, not affiliated with Apple. Apple and Apple Music are trademarks of Apple Inc.; the repo ships its own demo brand, and apart from the comparison stills above and the site's share image, Apple's film, music and logos are not included.
+The code is [MIT](license) © [Travis Fischer](https://x.com/transitive_bs). This is an unofficial study, not affiliated with Apple. Apple and Apple Music are trademarks of Apple Inc., and X is a trademark of X Corp.; the demo brand is the author's handle, and apart from the sting, the comparison stills above and the site's share image, Apple's film, music and logos are not included.
 
 ---
 

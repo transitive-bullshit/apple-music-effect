@@ -74,14 +74,7 @@ async function main() {
   })
   window.engine = engine
   applyQueryParams(engine, params)
-  // the sting (media/) never reaches a build either: a built site plays silent without asking for it
-  const audio = import.meta.env.PROD ? null : timeline.audio
-  createPlayer(
-    engine,
-    { ...timeline, audio },
-    film,
-    Number(params.get('t') ?? 0)
-  )
+  createPlayer(engine, timeline, film, Number(params.get('t') ?? 0))
 }
 
 main().catch((err: unknown) => {

@@ -1,6 +1,6 @@
 // The preview clock. With a song, the audio element is the master; its currentTime only advances
 // in coarse steps, so the picture follows a smooth clock that's eased back onto it every frame.
-// Without one (no audio in the timeline, or the file isn't in media/), it runs on its own, silent.
+// Without one (no audio in the timeline, or the file doesn't load), it runs on its own, silent.
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 
