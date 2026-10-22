@@ -42,17 +42,31 @@ export function fitKeys(fit: FitFile) {
   return keys
 }
 
-/** the film with each fit applied to its shot's lens */
+/** one curve: the hand keys before and after the fitted ones, which replace them in between */
+function merge(hand: readonly Key[] | undefined, fitted: readonly Key[]) {
+  const from = fitted[0]![0]
+  const to = fitted.at(-1)![0]
+  const outside = (hand ?? []).filter(([t]) => t < from - 1e-6 || t > to + 1e-6)
+  return [...outside, ...fitted].sort((a, b) => a[0] - b[0])
+}
+
+/** the film with each fit merged into its shot's lens */
 export function applyFits(film: Film, fits: FitFile[]): Film {
   return {
     ...film,
     shots: film.shots.map((shot) => {
       const fit = fits.find((f) => f.shot === shot.name)
       if (!fit || !shot.lens) return shot
-      return {
-        ...shot,
-        lens: { ...shot.lens, fit: { ...shot.lens.fit, ...fitKeys(fit) } }
+      const lens = { ...shot.lens, keys: { ...shot.lens.keys } }
+      for (const [key, fitted] of Object.entries(fitKeys(fit)) as [
+        LensKey,
+        Key[]
+      ][]) {
+        if (key === 'radius' || key === 'height')
+          lens[key] = merge(shot.lens[key], fitted)
+        else lens.keys[key] = merge(shot.lens.keys?.[key], fitted)
       }
+      return { ...shot, lens }
     })
   }
 }

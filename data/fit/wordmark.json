@@ -5,332 +5,302 @@
     {
       "t": 2.044,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.58011,
-        "height": 0.0151,
+        "exponent": 2.0,
+        "radius": 0.71456,
+        "height": 0.03413,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 17.56602,
-        "edge": 2.99991,
-        "shiftX": -0.07509
+        "flat": 12.50268,
+        "edge": 2.96101,
+        "shiftX": 0.00977
       },
-      "score": 0.03581
+      "score": 0.0264
     },
     {
       "t": 2.085,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.81185,
-        "height": 0.04934,
+        "exponent": 2.0,
+        "radius": 0.71842,
+        "height": 0.03548,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.40764,
-        "edge": 2.99986,
-        "shiftX": 0.06653
+        "flat": 12.37847,
+        "edge": 2.96507,
+        "shiftX": 0.01044
       },
-      "score": 0.02716
+      "score": 0.02587
     },
     {
       "t": 2.127,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.71103,
-        "height": 0.02191,
+        "exponent": 2.0,
+        "radius": 0.72139,
+        "height": 0.03671,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 12.41441,
-        "edge": 2.99978,
-        "shiftX": 0.04101
+        "flat": 12.28179,
+        "edge": 2.96827,
+        "shiftX": 0.011
       },
-      "score": 0.02352
+      "score": 0.02281
     },
     {
       "t": 2.169,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.70245,
-        "height": 0.02098,
+        "exponent": 2.0,
+        "radius": 0.72366,
+        "height": 0.03786,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 12.26965,
-        "edge": 3.0,
-        "shiftX": 0.04296
+        "flat": 12.20766,
+        "edge": 2.97076,
+        "shiftX": 0.01146
       },
-      "score": 0.0242
+      "score": 0.02229
     },
     {
       "t": 2.211,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.69618,
-        "height": 0.02405,
+        "exponent": 2.0,
+        "radius": 0.72549,
+        "height": 0.03897,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.59648,
-        "edge": 3.0,
-        "shiftX": 0.0247
+        "flat": 12.14766,
+        "edge": 2.97282,
+        "shiftX": 0.01187
       },
-      "score": 0.01868
+      "score": 0.01677
     },
     {
       "t": 2.252,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.69869,
-        "height": 0.02762,
+        "exponent": 2.0,
+        "radius": 0.72708,
+        "height": 0.04006,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.97191,
-        "edge": 3.0,
-        "shiftX": 0.02147
+        "flat": 12.09652,
+        "edge": 2.97461,
+        "shiftX": 0.01225
       },
-      "score": 0.01764
+      "score": 0.01448
     },
     {
       "t": 2.294,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.69766,
-        "height": 0.02976,
+        "exponent": 2.0,
+        "radius": 0.72858,
+        "height": 0.0412,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 12.35374,
-        "edge": 3.0,
-        "shiftX": 0.01666
+        "flat": 12.04977,
+        "edge": 2.9763,
+        "shiftX": 0.01264
       },
-      "score": 0.01609
+      "score": 0.01236
     },
     {
       "t": 2.336,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.71147,
-        "height": 0.03444,
+        "exponent": 2.0,
+        "radius": 0.73001,
+        "height": 0.04238,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.68477,
-        "edge": 3.0,
-        "shiftX": 0.01662
+        "flat": 12.00729,
+        "edge": 2.97788,
+        "shiftX": 0.01304
       },
-      "score": 0.01549
+      "score": 0.01099
     },
     {
       "t": 2.377,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.71723,
-        "height": 0.03665,
+        "exponent": 2.0,
+        "radius": 0.7314,
+        "height": 0.04359,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.17889,
-        "edge": 3.0,
-        "shiftX": 0.01227
+        "flat": 11.96858,
+        "edge": 2.97938,
+        "shiftX": 0.01346
       },
-      "score": 0.0119
+      "score": 0.00923
     },
     {
       "t": 2.419,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.72539,
-        "height": 0.04108,
+        "exponent": 2.0,
+        "radius": 0.73285,
+        "height": 0.0449,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.49059,
-        "edge": 3.0,
-        "shiftX": 0.01339
+        "flat": 11.93088,
+        "edge": 2.98089,
+        "shiftX": 0.01393
       },
-      "score": 0.01516
+      "score": 0.0087
     },
     {
       "t": 2.461,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.72607,
-        "height": 0.04147,
+        "exponent": 2.0,
+        "radius": 0.73434,
+        "height": 0.04624,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.53945,
-        "edge": 3.0,
-        "shiftX": 0.01307
+        "flat": 11.89499,
+        "edge": 2.98238,
+        "shiftX": 0.01443
       },
-      "score": 0.01418
+      "score": 0.00827
     },
     {
       "t": 2.502,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.74453,
-        "height": 0.05267,
+        "exponent": 2.0,
+        "radius": 0.73583,
+        "height": 0.04757,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 12.30304,
-        "edge": 3.0,
-        "shiftX": 0.00939
+        "flat": 11.86155,
+        "edge": 2.98382,
+        "shiftX": 0.01495
       },
-      "score": 0.01655
+      "score": 0.00821
     },
     {
       "t": 2.544,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.75489,
-        "height": 0.05711,
+        "exponent": 2.0,
+        "radius": 0.73741,
+        "height": 0.04894,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.52422,
-        "edge": 3.0,
-        "shiftX": 0.01228
+        "flat": 11.82877,
+        "edge": 2.98527,
+        "shiftX": 0.01552
       },
-      "score": 0.01673
+      "score": 0.00766
     },
     {
       "t": 2.586,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.75726,
-        "height": 0.05786,
+        "exponent": 2.0,
+        "radius": 0.73908,
+        "height": 0.05031,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.27152,
-        "edge": 3.0,
-        "shiftX": 0.01394
+        "flat": 11.79673,
+        "edge": 2.98672,
+        "shiftX": 0.01614
       },
-      "score": 0.0161
+      "score": 0.00752
     },
     {
       "t": 2.628,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.76375,
-        "height": 0.06056,
+        "exponent": 2.0,
+        "radius": 0.74091,
+        "height": 0.05174,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.07056,
-        "edge": 3.0,
-        "shiftX": 0.01421
+        "flat": 11.7642,
+        "edge": 2.98824,
+        "shiftX": 0.01682
       },
-      "score": 0.01615
+      "score": 0.00723
     },
     {
       "t": 2.669,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.75989,
-        "height": 0.05764,
+        "exponent": 2.0,
+        "radius": 0.74288,
+        "height": 0.05321,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 11.02397,
-        "edge": 3.0,
-        "shiftX": 0.01497
+        "flat": 11.73082,
+        "edge": 2.98982,
+        "shiftX": 0.01757
       },
-      "score": 0.01649
+      "score": 0.00693
     },
     {
       "t": 2.711,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.76454,
-        "height": 0.06061,
+        "exponent": 2.0,
+        "radius": 0.7452,
+        "height": 0.05484,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 10.85512,
-        "edge": 3.0,
-        "shiftX": 0.01818
+        "flat": 11.69343,
+        "edge": 2.99162,
+        "shiftX": 0.01847
       },
-      "score": 0.01585
+      "score": 0.00692
     },
     {
       "t": 2.753,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.76582,
-        "height": 0.0614,
+        "exponent": 2.0,
+        "radius": 0.74805,
+        "height": 0.05675,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 10.80642,
-        "edge": 3.0,
-        "shiftX": 0.01933
+        "flat": 11.64897,
+        "edge": 2.99377,
+        "shiftX": 0.01957
       },
-      "score": 0.01579
+      "score": 0.00678
     },
     {
       "t": 2.794,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.76404,
-        "height": 0.05862,
+        "exponent": 2.0,
+        "radius": 0.75167,
+        "height": 0.05906,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 10.83673,
-        "edge": 3.0,
-        "shiftX": 0.01908
+        "flat": 11.59405,
+        "edge": 2.99644,
+        "shiftX": 0.02099
       },
-      "score": 0.01641
+      "score": 0.00706
     },
     {
       "t": 2.836,
       "lens": {
-        "exponent": 2.0,
         "shiftY": 0.0,
-        "radius": 0.76475,
-        "height": 0.05826,
+        "exponent": 2.0,
+        "radius": 0.75655,
+        "height": 0.06207,
         "crown": 0.0,
         "shoulder": 0.0,
-        "flat": 10.76311,
-        "edge": 3.0,
-        "shiftX": 0.01989
+        "flat": 11.52115,
+        "edge": 2.99999,
+        "shiftX": 0.02292
       },
-      "score": 0.01679
-    },
-    {
-      "t": 2.878,
-      "lens": {
-        "exponent": 2.0,
-        "shiftY": 0.0,
-        "radius": 0.75559,
-        "height": 0.06079,
-        "crown": 0.0,
-        "shoulder": 0.0,
-        "flat": 12.2505,
-        "edge": 3.0,
-        "shiftX": 0.02461
-      },
-      "score": 0.01855
-    },
-    {
-      "t": 2.92,
-      "lens": {
-        "exponent": 2.0,
-        "shiftY": 0.0,
-        "radius": 0.75195,
-        "height": 0.05682,
-        "crown": 0.0,
-        "shoulder": 0.0,
-        "flat": 12.59921,
-        "edge": 3.0,
-        "shiftX": 0.0262
-      },
-      "score": 0.01823
+      "score": 0.00719
     }
   ]
 }

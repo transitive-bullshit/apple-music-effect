@@ -13,7 +13,7 @@ import {
   signedDistance,
   toMask
 } from './assets'
-import { interpolate, type Key, rigHeight, wobble } from './driver'
+import { interpolate, rigHeight, wobble } from './driver'
 import {
   clearTarget,
   createContext,
@@ -24,9 +24,9 @@ import {
   type Pass,
   type Target
 } from './gl'
+import { lensState } from './lens'
 import {
   type Film,
-  type LensKey,
   type LensState,
   type LogoSpec,
   type Params,
@@ -86,7 +86,6 @@ export class Engine {
   private passes: Record<string, Pass>
   private shotIndex = -1
   private simTime = 0
-  private frameSeed = 0
   /** 0: the picture; 1: surface height, 2: slope, 3: glass (scaled by debugScale) */
   debug = 0
   debugScale = 0.05
@@ -280,65 +279,14 @@ export class Engine {
     return interpolate(shot.push, t) + wobble(shot.pushWobble, t)
   }
 
-  /**
-   * The dome at shot time t: keyframes, then fitted keys over their time range (eased in and out
-   * over two frames), then the height multiplier (the panel's Dome dial). Fits are in unscaled units.
-   */
+  /** the dome at shot time t (src/lens.ts) */
   lensStateAt(shot: Shot, t: number, scaled = true): LensState {
-    const p = this.params[this.film.shots.indexOf(shot)]!
-    const lens = shot.lens
-    if (!lens)
-      return {
-        radius: 0,
-        height: 0,
-        exponent: 2,
-        crown: 0,
-        shoulder: 0,
-        flat: 2,
-        edge: 1,
-        shiftX: 0,
-        shiftY: 0,
-        tiltX: 0,
-        tiltY: 0,
-        astig: 0,
-        skew: 0,
-        ring: 0,
-        ringWidth: p.ringWidth,
-        ringWave: p.ringWavelength,
-        ripple: 0
-      }
-    const morph = Math.min(1, Math.max(0, interpolate(lens.morph, t)))
-    const state: LensState = {
-      radius: interpolate(lens.radius, t),
-      height: Math.max(0, interpolate(lens.height, t)),
-      exponent: 2 + (lens.exponent - 2) * morph,
-      // the round crown and the interior's flatness grow with the morph
-      crown: p.lensCrown * morph,
-      shoulder: 0,
-      flat: 2 + (p.lensFlat - 2) * morph,
-      edge: p.lensEdge,
-      shiftX: 0,
-      shiftY: 0,
-      tiltX: 0,
-      tiltY: 0,
-      astig: 0,
-      skew: 0,
-      ring: lens.ring ? interpolate(lens.ring, t) : 0,
-      ringWidth: p.ringWidth,
-      ringWave: p.ringWavelength,
-      ripple: lens.ripple ? interpolate(lens.ripple, t) : 0
-    }
-    const ease = 2 / this.film.fps
-    for (const [key, keys] of Object.entries(lens.fit ?? {}) as [
-      LensKey,
-      readonly Key[]
-    ][]) {
-      const inside = Math.min(t - keys[0]![0], keys.at(-1)![0] - t)
-      const w = Math.min(1, Math.max(0, inside / ease + 1))
-      state[key] += (interpolate(keys, t) - state[key]) * w
-    }
-    state.height = Math.max(0, state.height) * (scaled ? p.lensHeight : 1)
-    return state
+    return lensState(
+      shot,
+      this.params[this.film.shots.indexOf(shot)]!,
+      t,
+      scaled
+    )
   }
 
   /** the dome as the shaders take it: radius, height, exponent */
@@ -440,8 +388,11 @@ export class Engine {
     }
   }
 
-  /** renders film time t to the canvas */
-  render(t: number, frameIndex = this.frameSeed++) {
+  /**
+   * Renders film time t to the canvas. The dither (the spectrum's sample offsets, grain) is seeded
+   * by subframe alone, so a frame is a pure function of t and a still picture stays still.
+   */
+  render(t: number) {
     const gl = this.gl
     const index = this.shotIndexAt(t)
     const shot = this.film.shots[index]!
@@ -458,7 +409,7 @@ export class Engine {
       if (index !== this.shotIndex || local < this.simTime - 1e-9)
         this.resetShot(index)
       this.advance(local)
-      this.drawOptics(shot, a, p, local, frameIndex * K + k)
+      this.drawOptics(shot, a, p, local, k)
       gl.enable(gl.BLEND)
       gl.blendFunc(gl.ONE, gl.ONE)
       this.passes.copy!.draw(this.accum, {
@@ -467,7 +418,7 @@ export class Engine {
       })
       gl.disable(gl.BLEND)
     }
-    this.finish(p, frameIndex, interpolate(shot.fade, t - shot.start))
+    this.finish(p, interpolate(shot.fade, t - shot.start))
   }
 
   private drawOptics(
@@ -538,7 +489,7 @@ export class Engine {
     })
   }
 
-  private finish(p: Params, seed: number, fade: number) {
+  private finish(p: Params, fade: number) {
     // bloom: a mip chain down, then tent-filtered back up, each level adding the one below
     let src = this.accum
     for (const level of this.bloom) {
@@ -567,7 +518,7 @@ export class Engine {
       uFade: fade,
       uVignette: p.vignette,
       uGrain: p.grain,
-      uSeed: seed % 997,
+      uSeed: 0,
       uAspect: this.film.aspect
     })
   }

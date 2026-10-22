@@ -152,7 +152,8 @@ export const DEFAULT_PARAMS: Params = {
   floorColor: [0.0012, 0.0014, 0.002],
   bloom: 0.03,
   bloomRadius: 1,
-  grain: 0.015,
+  // the film has none: its held frames are perfectly still
+  grain: 0,
   vignette: 0.25,
 
   shutter: 0.5,
@@ -225,8 +226,11 @@ export interface LensSpec {
   ring?: readonly Key[]
   /** height of the rod's ripples on the dome (optional) */
   ripple?: readonly Key[]
-  /** keyframes fitted to the film (data/fit, src/fits.ts); over their time range each replaces the derived value for its key */
-  fit?: Partial<Record<LensKey, readonly Key[]>>
+  /**
+   * keyframes for any other value, replacing what the morph derives; a fit to the film (data/fit,
+   * src/fits.ts) replaces these, radius and height over its time range
+   */
+  keys?: Partial<Record<LensKey, readonly Key[]>>
 }
 
 export interface Shot {
@@ -306,9 +310,10 @@ export const APPLE_MUSIC: Film = {
         [0.5, -0.015]
       ],
       tilt: [[[0, 0]], [[0, 0]]],
+      // the film's first bubble brightens over its first six frames
       fade: [
-        [0.06, 0],
-        [0.12, 1]
+        [0.04, 0],
+        [0.25, 1]
       ],
       // the small early dome's rim carries only thin colour in the film
       colour: [
@@ -336,13 +341,15 @@ export const APPLE_MUSIC: Film = {
           [1, 0.535],
           [1.17, 0.54]
         ],
-        // from the note's magnification in the film (the gap between its stems): a lens of
-        // height H over radius R with focal length f magnifies a logo at depth D by f / (f - D)
+        // the fit (data/fit/icon.json) covers 0.21-1 s; before it the small dome rises into the
+        // fit's first height (0.063), magnifying strongly while its footprint is small; after it it falls over six frames, as the film's smears recede, to
+        // a thin layer of oil whose rim still outlines the tile. The keys between are the
+        // earlier hand fit, from the gap between the note's stems, used only without the fit.
         height: [
           [0.05, 0],
-          [0.08, 0.06],
-          [0.12, 0.12],
-          [0.17, 0.17],
+          [0.08, 0.035],
+          [0.12, 0.055],
+          [0.17, 0.064],
           [0.25, 0.17],
           [0.33, 0.125],
           [0.42, 0.12],
@@ -351,9 +358,9 @@ export const APPLE_MUSIC: Film = {
           [0.8, 0.1],
           [0.9, 0.091],
           [1, 0.081],
-          [1.1, 0.063],
-          [1.2, 0.038],
-          [1.26, 0]
+          [1.08, 0.075],
+          [1.17, 0.04],
+          [1.25, 0.012]
         ],
         morph: [
           [0.28, 0],
@@ -442,8 +449,8 @@ export const APPLE_MUSIC: Film = {
           [0.215, 0.3],
           [0.295, 0.35],
           [0.375, 0.4],
-          [0.455, 0.45],
-          [0.535, 0.5],
+          [0.455, 0.47],
+          [0.535, 0.6],
           [0.635, 0.6],
           [0.735, 0.69],
           [0.885, 0.71],
@@ -453,19 +460,33 @@ export const APPLE_MUSIC: Film = {
           [1.5, 0.77],
           [1.7, 0.8]
         ],
+        // the orb's dome, which from 0.375 (1.84 s) widens and falls into the fit's wide, low one
+        // (0.035 at 0.58), which collapses from 1.375 (2.84 s) by 1.62 (3.08 s), as the film's
+        // echoes fade
         height: [
           [0, 0.015],
           [0.035, 0.02],
           [0.135, 0.045],
           [0.295, 0.075],
           [0.375, 0.095],
-          [0.455, 0.105],
-          [0.535, 0.105],
           [0.635, 0.06],
           [0.735, 0.02],
-          [0.85, 0]
+          [0.85, 0],
+          [1.62, 0]
         ],
         morph: [[0, 0]],
+        // the orb's profile, which turns into the fit's (data/fit/wordmark.json, from 0.58) over the
+        // film's quarter second of widening
+        keys: {
+          flat: [
+            [0, 2],
+            [0.375, 2]
+          ],
+          edge: [
+            [0, 0.8],
+            [0.375, 0.8]
+          ]
+        },
         ring: [
           [0.5, 0],
           [0.7, 0.008],

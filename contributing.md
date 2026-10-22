@@ -79,7 +79,7 @@ Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot
 
 ## Tests
 
-- `pnpm test`: format, lint, types, and `test/` (keyframe interpolation, the wobble, the film's timeline, the sting timeline).
+- `pnpm test`: format, lint, types, and `test/` (keyframe interpolation, the wobble, the film's timeline, the fits, that every animated value is smooth, the sting timeline).
 - `uv run pytest -q`: `tests/` (the committed timeline).
 - CI runs both, plus `pnpm build` and `py_compile`, offline. Renders and comparisons need Chrome and the reference film, so they stay local.
 

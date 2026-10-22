@@ -7,7 +7,9 @@ export type Key = readonly [number, number]
 
 /**
  * Monotone cubic interpolation (Fritsch-Carlson) through the keys: smooth, with no overshoot
- * between keys, and held flat before the first and after the last.
+ * between keys, and held flat before the first and after the last. It eases out of the first key
+ * and into the last, so the hold joins without a kink: every curve is continuous in value and in
+ * slope (C1), which motion needs to look smooth.
  */
 export function interpolate(keys: readonly Key[], t: number) {
   const n = keys.length
@@ -39,7 +41,7 @@ function tangents(keys: readonly Key[]) {
     return (y1 - y0) / (t1 - t0)
   })
   const m = keys.map((_, i) =>
-    i === 0 ? d[0]! : i === n - 1 ? d[n - 2]! : (d[i - 1]! + d[i]!) / 2
+    i === 0 || i === n - 1 ? 0 : (d[i - 1]! + d[i]!) / 2
   )
   for (let i = 0; i < n - 1; i++) {
     if (d[i] === 0) {
@@ -79,7 +81,9 @@ export function wobble(w: Wobble | null, t: number) {
   if (!w || w.amp === 0) return 0
   const u = t - w.start
   if (u <= 0) return 0
-  const fadeIn = w.attack > 0 ? Math.min(1, u / w.attack) : 1
+  // smoothstep, so the oscillation's speed has no kink where the fade ends
+  const a = w.attack > 0 ? Math.min(1, u / w.attack) : 1
+  const fadeIn = a * a * (3 - 2 * a)
   return (
     w.amp * fadeIn * Math.exp(-u / w.decay) * Math.sin(2 * Math.PI * w.freq * u)
   )

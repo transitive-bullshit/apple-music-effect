@@ -87,7 +87,7 @@ export async function exportMp4({
       throw new DOMException('export cancelled', 'AbortError')
     }
     const t = i / film.fps
-    engine.render(t, i)
+    engine.render(t)
     await video.add(t, 1 / film.fps)
     onProgress?.(i + 1, frames)
     // let the page breathe so the progress shows

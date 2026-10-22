@@ -72,9 +72,8 @@ async function main() {
     applyQueryParams(engine, params)
     engine.debug = Number(params.get('debug') ?? 0)
     engine.debugScale = Number(params.get('debugScale') ?? 0.05)
-    let frame = 0
     window.renderFrame = (t) => {
-      engine.render(t, frame++)
+      engine.render(t)
       engine.gl.finish()
     }
     window.renderReady = true
