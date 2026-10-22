@@ -1,5 +1,6 @@
-// The player: renders the film live in a 16:9 frame, in sync with the sting. Space plays and
-// pauses, the arrow keys step a frame (with shift, a beat), and the bar scrubs. Drop an image on
+// The player: renders the film live in a 16:9 frame, in sync with the sting. Space or a click on
+// the picture plays and pauses, the arrow keys step a frame (with shift, a beat), and the bar
+// scrubs. Drop an image on
 // the picture to replace the logo of the shot that's showing; the panel uploads logos, tunes the
 // look and exports an MP4.
 
@@ -174,6 +175,9 @@ export function createPlayer(
   addEventListener('input', redraw)
 
   play.addEventListener('click', () => clock.toggle())
+  stage.addEventListener('click', () => {
+    if (!exporting) clock.toggle()
+  })
   scrub.addEventListener('input', () => clock.seek(Number(scrub.value)))
   addEventListener('keydown', (e) => {
     if (e.code === 'Escape') exporting?.abort()

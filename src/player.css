@@ -30,6 +30,9 @@ canvas {
   place-items: center;
   min-height: 0;
   overflow: hidden;
+  /* a click plays and pauses; no double-tap zoom on phones */
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 .stage.dropping canvas {
