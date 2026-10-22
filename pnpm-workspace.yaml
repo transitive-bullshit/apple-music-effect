@@ -1,0 +1,10 @@
+allowBuilds:
+  esbuild: true
+  simple-git-hooks: true
+
+enablePrePostScripts: true
+
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - '@fisch0920/config'

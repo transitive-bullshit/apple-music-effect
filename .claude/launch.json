@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "player",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["PORTLESS=0", "pnpm", "dev"],
+      "port": 5215
+    }
+  ]
+}

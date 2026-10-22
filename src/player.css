@@ -1,0 +1,60 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #050307;
+  color: #e8e2ee;
+}
+
+body {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  font:
+    13px/1.2 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+
+body.render {
+  display: block;
+}
+
+canvas {
+  display: block;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 16px 14px;
+}
+
+.controls input {
+  flex: 1;
+  min-width: 0;
+  accent-color: #ff5f8a;
+}
+
+.controls button {
+  min-width: 64px;
+  padding: 4px 12px;
+  font: inherit;
+  color: inherit;
+  background: #1c1420;
+  border: 1px solid #3a2e40;
+  border-radius: 4px;
+}
+
+[data-time] {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

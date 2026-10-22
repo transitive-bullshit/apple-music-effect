@@ -1,0 +1,17 @@
+[project]
+name = "apple-music-effect"
+version = "0.0.0"
+description = "Audio analysis for the Apple Music effect renderer: the song's timeline of beats"
+requires-python = ">=3.12,<3.13"
+dependencies = []
+
+[dependency-groups]
+analysis = ["librosa>=1.0.0"]
+dev = ["pytest>=8"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

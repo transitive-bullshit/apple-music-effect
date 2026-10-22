@@ -1,0 +1,84 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+/playwright-report
+/test-results
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# ide
+.idea
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# pnpm
+.pnpm-store
+
+# local env files
+.env
+.env.local
+local.env
+.env.build
+.env.development.local
+.env.test.local
+.env.production.local
+
+# vercel
+.vercel
+
+# local work
+/work
+
+# typescript build info
+*.tsbuildinfo
+
+# environments and local agent settings
+/.venv
+__pycache__/
+*.pyc
+.pytest_cache/
+/.claude/settings.local.json
+
+# copyrighted source audio and reference videos (never committed)
+/media
+/reference
+
+# derived outputs (regenerable from the pipeline)
+/analysis/out
+/dist
+/renders
+/frames
+/.cache
+
+# safety net: audio and video by extension (use `git add -f` for a deliberate exception)
+*.mp3
+*.wav
+*.flac
+*.aif
+*.aiff
+*.m4a
+*.aac
+*.ogg
+*.mp4
+*.mov
+*.webm
+*.mkv

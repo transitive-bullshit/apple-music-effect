@@ -1,0 +1,58 @@
+{
+  "name": "apple-music-effect",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A custom video renderer for the Apple Music effect, with a live preview player in the browser.",
+  "license": "MIT",
+  "author": "Travis Fischer <travis@transitivebullsh.it>",
+  "repository": "https://github.com/transitive-bullshit/apple-music-effect",
+  "type": "module",
+  "scripts": {
+    "dev": "portless run vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "render": "tsx scripts/render.ts",
+    "test": "run-s test:*",
+    "test:format": "oxfmt --check",
+    "test:lint": "oxlint",
+    "test:types": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "lint": "oxlint",
+    "typecheck": "pnpm test:types",
+    "fix": "run-s fix:*",
+    "fix:format": "oxfmt",
+    "fix:lint": "oxlint --fix"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@fisch0920/config": "^2.4.0",
+    "@types/node": "^26.6.5",
+    "lint-staged": "^17.6.0",
+    "npm-run-all2": "^9.0.3",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "oxlint-tsgolint": "^7.0.2004",
+    "playwright-core": "^1.64.1",
+    "portless": "^0.15.8",
+    "simple-git-hooks": "^2.14.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "oxfmt --no-error-on-unmatched-pattern",
+      "oxlint --fix"
+    ]
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@12.5.1"
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Apple Music Effect</title>
+    <meta name="theme-color" content="#050307" />
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <main class="stage"><canvas></canvas></main>
+    <div class="controls">
+      <button type="button" data-play>Play</button>
+      <input
+        type="range"
+        min="0"
+        step="0.001"
+        value="0"
+        aria-label="Seek"
+        data-scrub
+      />
+      <span data-time></span>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
