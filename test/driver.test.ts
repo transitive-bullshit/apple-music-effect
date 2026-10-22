@@ -41,6 +41,7 @@ describe('driver', () => {
         shot.zoom,
         shot.fade,
         shot.colour ?? [],
+        shot.gloss ?? [],
         shot.ring ?? [],
         shot.ball?.lift ?? [],
         shot.dome.radius,

@@ -31,6 +31,7 @@ uniform float uReflect;
 uniform float uSoftbox;
 uniform float uHorizon;
 uniform float uRingLight;
+uniform float uRingWidth;  // its angular spread (in tan of the angle off the axis): wider is softer
 uniform vec4 uBall;        // xy centre, z height of centre, w radius (0 for none)
 uniform vec2 uLensCenter;
 uniform vec3 uLens;        // radius (half-size), height, superellipse exponent
@@ -121,7 +122,8 @@ vec3 env(vec3 r) {
   float fill = 1.0 - smoothstep(0.0, 0.4, length(max(abs(s - vec2(1.8, -0.2)) - vec2(0.2, 0.7), 0.0)));
   // the studio's walls, seen only at grazing angles: steep rims catch them as bright lines
   float horizon = uHorizon * smoothstep(1.2, 4.0, length(s));
-  float ring = exp(-pow((length(s) - 0.8) / 0.15, 2.0));
+  // none near the axis, so flat oil stays black however soft the ring
+  float ring = exp(-pow((length(s) - 0.8) / uRingWidth, 2.0)) * smoothstep(0.15, 0.4, length(s));
   return vec3(0.95, 0.97, 1.0) * (uSoftbox * (key + 0.25 * fill) + uRingLight * ring + horizon);
 }
 

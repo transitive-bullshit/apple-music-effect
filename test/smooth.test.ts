@@ -60,6 +60,7 @@ function animated(shot: Shot) {
     shot.fade,
     shot.zoom,
     shot.colour,
+    shot.gloss,
     shot.ring,
     shot.ball?.lift
   ].filter((keys) => keys && keys.length > 1)
@@ -78,11 +79,12 @@ describe('the animation is smooth (continuous in value and slope)', () => {
       expect(rough(curves, length)).toEqual([])
     })
 
-    test(`${shot.name}: fade, zoom, colour, the rig's tip`, () => {
+    test(`${shot.name}: fade, zoom, colour, gloss, the rig's tip`, () => {
       const curves = {
         fade: (t: number) => interpolate(shot.fade, t),
         zoom: (t: number) => interpolate(shot.zoom, t),
         colour: (t: number) => (shot.colour ? interpolate(shot.colour, t) : 1),
+        gloss: (t: number) => (shot.gloss ? interpolate(shot.gloss, t) : 1),
         lift: (t: number) => (shot.ball ? interpolate(shot.ball.lift, t) : 0)
       }
       expect(rough(curves, length)).toEqual([])

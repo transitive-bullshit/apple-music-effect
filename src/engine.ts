@@ -238,11 +238,11 @@ export class Engine {
       uWavelengths: Math.round(p.wavelengths),
       uDefocus: p.defocus,
       uBlur: p.blur,
-      // the dome's reflections, which can fade as it settles
-      uReflect: p.reflect * (1 + (p.settledReflect - 1) * d.settle),
+      uReflect: p.reflect * (shot.gloss ? interpolate(shot.gloss, local) : 1),
       uSoftbox: p.softbox,
       uHorizon: p.horizon,
       uRingLight: p.ringLight,
+      uRingWidth: p.ringLightWidth,
       uBall: ball,
       uLensCenter: shot.dome.center,
       uLens: [d.radius, d.height, d.exponent],

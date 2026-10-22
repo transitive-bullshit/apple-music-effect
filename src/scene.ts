@@ -47,8 +47,6 @@ export interface Params {
   blur: number
   /** strength of the surface's reflection of the studio */
   reflect: number
-  /** what the reflection's strength becomes as the dome settles, relative to `reflect` */
-  settledReflect: number
   /** 1: the logo shows only within the dome's footprint (as in Apple's film) */
   reveal: number
   /** softness of the reveal's edge, as a fraction of the dome's radius */
@@ -59,6 +57,8 @@ export interface Params {
   horizon: number
   /** brightness of a ring light around the lens, which slopes of about 0.35 catch whichever way they face */
   ringLight: number
+  /** how far the ring light spreads off that angle: wider is a softer reflection */
+  ringLightWidth: number
 
   // look
   exposure: number
@@ -95,12 +95,12 @@ export const DEFAULT_PARAMS: Params = {
   defocus: 0.05,
   blur: 0,
   reflect: 1,
-  settledReflect: 1,
   reveal: 1,
   revealSoft: 0.06,
   softbox: 20,
   horizon: 6,
   ringLight: 0,
+  ringLightWidth: 0.15,
 
   exposure: 1,
   logoColor: [0.93, 0.95, 1],
@@ -145,6 +145,8 @@ export interface Shot {
   fade: readonly Key[]
   /** how strongly the oil splits colour over shot time, times the shot's dispersion (1 if absent) */
   colour?: readonly Key[]
+  /** how strongly the dome reflects the studio over shot time, times the shot's reflect (1 if absent) */
+  gloss?: readonly Key[]
   /** camera zoom over shot time */
   zoom: readonly Key[]
   params: Partial<Params>
@@ -247,12 +249,12 @@ export const APPLE_MUSIC: Film = {
       // an orb around the rig's chrome tip that widens and settles into a wide, low dome whose
       // soft rim lies on the wordmark's ends, smearing them outward, then falls flat
       dome: parseDome(wordmarkDome),
-      // the echoes on the dome's edge (shot time = reel time - 1.465): gentle while the wide dome
-      // stands, so they bend only the wordmark's ends; then, as it flattens and its edge pulls in,
-      // the copies of the ends that drift and fade by 3.08 s (shot 1.62)
+      // the echoes on the dome's edge (shot time = reel time - 1.465), from about 2.3 s as in the
+      // film: gentle while the wide dome stands, so they bend only the wordmark's ends; then, as it
+      // flattens and its edge pulls in, the copies of the ends that drift and fade by 3.08 s
       ring: [
-        [0.5, 0],
-        [0.7, 0.003],
+        [0.7, 0],
+        [0.9, 0.003],
         [1.0, 0.003],
         [1.2, 0.0035],
         [1.45, 0.0025],
@@ -277,19 +279,27 @@ export const APPLE_MUSIC: Film = {
         [0.375, 0.2],
         [0.58, 1]
       ],
+      // the orb's ripples and round outline reflect the studio; once it settles into the wide
+      // dome the outline fades slowly, as in the film (still faint at 2.4 s), leaving the
+      // ripple only where it bends the wordmark's ends
+      gloss: [
+        [0.45, 1],
+        [0.7, 0.3],
+        [1.05, 0]
+      ],
       zoom: [[0, 1]],
       params: {
         ringWavelength: 0.06,
         ringWidth: 0.06,
         // the wave travels outward, so the echo bars keep moving as they fade
         ringSpeed: 0.08,
-        // the film's key and walls barely show in this dome; a ring light around the lens draws the
-        // orb's ripples as rings all the way round. Once it settles into the wide dome, nothing
-        // reflects: its ripple shows only where it bends the wordmark, fading out above and below
+        // the film's key and walls barely show in this dome; a broad, soft ring light around the
+        // lens draws the orb's ripples as rings all the way round, and its outline as a soft halo
+        // (see gloss for how that fades)
         softbox: 2,
         horizon: 0.25,
-        ringLight: 2.5,
-        settledReflect: 0,
+        ringLight: 1.3,
+        ringLightWidth: 0.45,
         rippleWavelength: 0.08,
         dispersion: 60,
         dispersionKnee: 0.3
