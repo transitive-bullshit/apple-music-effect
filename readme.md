@@ -2,12 +2,14 @@
 
 > A real-time recreation of the liquid logo animation from Apple Music's new identity: a physically based lens of oil, ray traced in the browser, that works with any logo.
 
-[![The demo brand: the X logo under a lens of oil shaped like an app tile, and the handle @transitive_bs under a round one](docs/preview.webp)](https://apple-music-effect.vercel.app)
+[![The demo brand: the X logo under a lens of oil shaped like an app tile, and the handle @transitive_bs under a round one](docs/preview.webp)](https://apple-music-effect.transitivebullsh.it)
+
+**[Play it live](https://apple-music-effect.transitivebullsh.it) · [Read the explainer](https://apple-music-effect.transitivebullsh.it/explainer)**
 
 Apple filmed its new mark in a tray of mineral oil, rippled by a two-note sting from Fred again.. and NEST Acoustics. This repo rebuilds the effect on the GPU: a dome of oil that magnifies the logo and smears its ends, animated by a few smooth curves fitted to Apple's film, and spectral ray tracing for the rainbow fringes.
 
-- **Player:** drop in your own icon and wordmark, tune the oil and the light, export an MP4 (1080p or 4K) from the browser.
-- **Explainer:** how the original was made, why it looks the way it does, and how to make your own, in code or in a dish of oil (`explainer.html`).
+- **[Player](https://apple-music-effect.transitivebullsh.it):** drop in your own icon and wordmark, tune the oil and the light, export an MP4 (1080p or 4K) from the browser.
+- **[Explainer](https://apple-music-effect.transitivebullsh.it/explainer):** how the original was made, why it looks the way it does, and how to make your own, in code or in a dish of oil.
 - **Renderer:** deterministic headless renders and a comparison harness against the reference film.
 
 ## How it was made

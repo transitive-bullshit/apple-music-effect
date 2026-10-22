@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://apple-music-effect.vercel.app/sitemap.xml
+Sitemap: https://apple-music-effect.transitivebullsh.it/sitemap.xml

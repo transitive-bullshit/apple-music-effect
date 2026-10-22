@@ -88,7 +88,7 @@ Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot
 
 ## Deploy
 
-The site deploys to Vercel from GitHub: every push to `main` builds production (https://apple-music-effect.vercel.app), other branches get preview URLs. `vercel.json` sets the Vite build, clean URLs and the caching (hashed `assets/` immutable for a year, other static files a day, HTML revalidated on every visit). The project pins pnpm through Corepack (`ENABLE_EXPERIMENTAL_COREPACK=1`), and Web Analytics loads only on the built site (`src/analytics.ts`). The share image, icons, `robots.txt`, `sitemap.xml` and `llms.txt` live in `public/`.
+The site deploys to Vercel from GitHub: every push to `main` builds production (https://apple-music-effect.transitivebullsh.it), other branches get preview URLs. `vercel.json` sets the Vite build, clean URLs and the caching (hashed `assets/` immutable for a year, other static files a day, HTML revalidated on every visit). The project pins pnpm through Corepack (`ENABLE_EXPERIMENTAL_COREPACK=1`), and Web Analytics loads only on the built site (`src/analytics.ts`). The share image, icons, `robots.txt`, `sitemap.xml` and `llms.txt` live in `public/`.
 
 Deployed, there's no reference material, so the site shows the demo brand, with the sting (the build copies the file `data/timeline.json` names to the same path in `dist/`).
 
