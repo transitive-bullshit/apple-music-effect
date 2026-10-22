@@ -115,7 +115,9 @@ export async function resolveLogos(
     film.shots.map(async (shot) => {
       const custom = overrides[shot.name]
       if (custom) return { ...shot, logo: await fitLogo(shot.name, custom) }
-      if (await reachable(shot.logo.src)) return shot
+      // Apple's reference assets never reach a build (dist), so a built site uses the demo brand
+      // without asking for them
+      if (!import.meta.env.PROD && (await reachable(shot.logo.src))) return shot
       return {
         ...shot,
         logo: await fitLogo(
