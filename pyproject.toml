@@ -6,7 +6,15 @@ requires-python = ">=3.12,<3.13"
 dependencies = []
 
 [dependency-groups]
-analysis = ["librosa>=1.0.0"]
+analysis = [
+  "librosa>=1.0.0",
+  "matplotlib>=3.10",
+  "mlx-whisper>=0.4.3 ; platform_machine == 'arm64' and sys_platform == 'darwin'",
+  "opencv-python-headless>=4.10",
+  "pillow>=11",
+  "potracer>=0.0.4",
+  "simpleitk>=2.4"
+]
 dev = ["pytest>=8"]
 
 [tool.uv]

@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Made by Sound, Made by Code</title>
+    <meta
+      name="description"
+      content="How Apple Music's liquid logo animation works, how to simulate it in a browser, and how to film your own on a budget."
+    />
+    <meta name="theme-color" content="#050307" />
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <header class="hero">
+      <canvas data-figure data-loop="1" data-w="1280" data-h="720"></canvas>
+      <div class="hero-text">
+        <p class="kicker">An unofficial study of Apple Music's new identity</p>
+        <h1>Made by sound, made by code</h1>
+        <p class="lede">
+          Apple Music's new logo animation was filmed in a tray of mineral oil,
+          rippled by a few low notes. This page takes the effect apart, rebuilds
+          it as a real-time simulation in your browser, and shows how to make
+          your own, in code or in a dish of oil.
+        </p>
+        <p class="actions">
+          <a class="button" href="./">Open the player</a>
+          <a
+            class="button ghost"
+            href="https://www.youtube.com/watch?v=1XxNXkOHKZw"
+            >Watch Apple's film</a
+          >
+        </p>
+      </div>
+    </header>
+
+    <main class="prose">
+      <section>
+        <h2>What Apple filmed</h2>
+        <p>
+          For its first rebrand since 2015, Apple Music and TBWA\Media Arts Lab
+          wanted the visuals to come from the music itself. Fred again.. and
+          NEST Acoustics wrote a short sonic logo and split it into individual
+          notes. A custom rig drove a transducer, a device that turns an audio
+          signal into vibration, in a shallow bath of mineral oil. Acrylic
+          versions of the note and the wordmark sat in the oil, with a clear
+          cover in the shape of the app icon on the moving rig. Everything was
+          captured in camera.
+        </p>
+        <p>
+          Two constraints came out of the tests: few notes, and low ones. Many
+          notes, or high ones, moved the oil too much to read the logo. The
+          finished sting is two sustained chords, an F♯ in the bass (46 Hz)
+          under the icon, and an A (55 Hz) under the wordmark, joined by a quick
+          upward glide.
+        </p>
+      </section>
+
+      <section>
+        <h2>Why it looks the way it does</h2>
+        <p>
+          Everything you see is one camera looking straight down through a
+          moving oil surface at a bright logo on a dark floor. Five things
+          happen to the light on the way.
+        </p>
+        <figure class="diagram">
+          <svg
+            viewBox="0 0 720 300"
+            role="img"
+            aria-label="A camera above a dome of oil; rays bend through the dome and land on the logo on the floor, splitting into colours at the steep edge."
+          >
+            <defs>
+              <linearGradient id="oil" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="#1b2a3a" />
+                <stop offset="1" stop-color="#0d141c" />
+              </linearGradient>
+            </defs>
+            <rect
+              x="40"
+              y="150"
+              width="640"
+              height="110"
+              fill="url(#oil)"
+              rx="6"
+            />
+            <path
+              d="M40 150 H230 C280 150 290 95 360 95 C430 95 440 150 490 150 H680"
+              fill="none"
+              stroke="#9fc4ff"
+              stroke-width="2"
+            />
+            <path
+              d="M230 150 C280 150 290 95 360 95 C430 95 440 150 490 150 Z"
+              fill="#1b2a3a"
+            />
+            <rect x="300" y="250" width="120" height="10" fill="#fff" rx="2" />
+            <text x="360" y="285" text-anchor="middle" class="label">
+              logo on the floor
+            </text>
+            <rect x="340" y="12" width="40" height="22" rx="4" fill="#556" />
+            <text x="390" y="28" class="label">camera</text>
+            <g stroke-width="1.5" fill="none">
+              <path d="M330 34 V108 L345 250" stroke="#ccd" />
+              <path d="M390 34 V108 L375 250" stroke="#ccd" />
+              <path d="M265 34 V140 L300 250" stroke="#ff7a59" />
+              <path d="M265 34 V140 L310 250" stroke="#ffd34d" />
+              <path d="M265 34 V140 L322 250" stroke="#59b8ff" />
+            </g>
+            <text x="250" y="120" text-anchor="end" class="label">
+              steep edge: colours split
+            </text>
+            <text x="470" y="88" class="label">dome = lens</text>
+            <text x="60" y="175" class="label">mineral oil, n ≈ 1.47</text>
+          </svg>
+        </figure>
+        <ol class="ingredients">
+          <li>
+            <strong>A lens of oil.</strong> The rig pushes oil up into a dome. A
+            dome is a plano-convex lens: the logo under it looks magnified,
+            strongly while the dome is small and steep (about 3× in the first
+            frames), less as it spreads. A lens with focal length
+            <em>f</em> over a logo at depth <em>D</em> magnifies by
+            <em>f / (f − D)</em>.
+          </li>
+          <li>
+            <strong>Dispersion.</strong> Oil bends blue light slightly more than
+            red. On gentle slopes the difference is invisible; on the dome's
+            steep rim the colours land in different places, so white edges split
+            into the rainbow fringes that define the look.
+          </li>
+          <li>
+            <strong>Index matching.</strong> Glass and mineral oil have nearly
+            the same refractive index, so the glass icon tile disappears once
+            oil covers it. Only its edges catch the light, which is why it reads
+            as Liquid Glass rather than as an object.
+          </li>
+          <li>
+            <strong>Ring waves.</strong> When the dome falls, its oil leaves as
+            a ring of waves. A crest passing over the end of a word folds the
+            image, leaving the echoes off the Apple logo and the bar off the c.
+          </li>
+          <li>
+            <strong>A reveal.</strong> The logo only appears where the dome has
+            reached, so each mark grows out of an orb. Whether that's lighting
+            or compositing, it's a design choice worth copying.
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Take it apart</h2>
+        <p>
+          Each figure is the live simulation, paused. Switch off one ingredient
+          at a time.
+        </p>
+        <div class="figures">
+          <figure>
+            <canvas
+              data-figure
+              data-t="0.17"
+              data-w="640"
+              data-h="360"
+              data-crop="1.6"
+            ></canvas>
+            <figcaption>
+              The orb: a small, steep dome magnifies the logo about three times.
+              <label
+                ><input type="checkbox" data-toggle="lensHeight" data-off="0" />
+                no dome</label
+              >
+            </figcaption>
+          </figure>
+          <figure>
+            <canvas
+              data-figure
+              data-t="0.6"
+              data-w="640"
+              data-h="360"
+              data-crop="1.6"
+            ></canvas>
+            <figcaption>
+              The tile: the dome fills the icon's shape; its steep rim stretches
+              the logo's ends.
+              <label
+                ><input type="checkbox" data-toggle="dispersion" data-off="0" />
+                no dispersion</label
+              >
+            </figcaption>
+          </figure>
+          <figure>
+            <canvas
+              data-figure
+              data-t="1.85"
+              data-w="640"
+              data-h="360"
+              data-crop="1.4"
+            ></canvas>
+            <figcaption>
+              The wordmark's lens, with the rig's chrome tip at its crown and
+              the rod's ripples.
+              <label
+                ><input type="checkbox" data-toggle="horizon" data-off="0" /> no
+                rim light</label
+              >
+            </figcaption>
+          </figure>
+          <figure>
+            <canvas
+              data-figure
+              data-t="2.65"
+              data-w="640"
+              data-h="360"
+              data-crop="1.4"
+            ></canvas>
+            <figcaption>
+              The echoes: a crest of the outgoing ring folds the ends of the
+              word.
+              <label
+                ><input type="checkbox" data-toggle="dispersion" data-off="0" />
+                no dispersion</label
+              >
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>How the simulation works</h2>
+        <p>
+          The renderer is a WebGL2 program that follows the physics above, step
+          by step, for every pixel of every frame.
+        </p>
+        <ol>
+          <li>
+            <strong>The rig.</strong> Keyframes, measured off Apple's film, give
+            the dome's size, height and shape over time, the glass tile's
+            height, and the camera's zoom. The two notes of the sting set when
+            each shot starts.
+          </li>
+          <li>
+            <strong>The oil.</strong> Around the dome, a shallow-water
+            simulation on the GPU carries the waves: the oil's depth and flow on
+            a staggered grid, with viscosity for thick oil, a moving floor where
+            the tile rises, and a soft edge so waves leave the frame.
+          </li>
+          <li>
+            <strong>The optics.</strong> For each pixel, a ray from the camera
+            refracts at the surface by Snell's law, once per wavelength (12 by
+            default, with mineral oil's dispersion exaggerated), and lands on
+            the logo on the floor. The colours recombine with spectral weights,
+            so white stays white and only edges split. Fresnel reflection adds
+            the studio's softboxes and walls, which draw the bright rims.
+          </li>
+          <li>
+            <strong>The camera.</strong> Several subframes per frame give motion
+            blur, then bloom, grain and a vignette. Every frame is a pure
+            function of time, so the preview, stills and exported videos agree.
+          </li>
+        </ol>
+        <p>
+          To match the film, we measured it: the time offset between the YouTube
+          cut and Apple's reel (by cross-correlating their brightness), the
+          note's magnification frame by frame (from the gap between its stems),
+          the zoom-out, the tile's size. A comparison harness renders the
+          simulation at the film's timestamps and sets each frame beside
+          Apple's.
+        </p>
+      </section>
+
+      <section>
+        <h2>Make your own, in code</h2>
+        <ol>
+          <li>
+            <a href="./">Open the player</a>. It plays the effect live with a
+            demo brand.
+          </li>
+          <li>
+            Drop your icon on the picture while the first shot plays, and your
+            wordmark during the second (or use <em>Upload</em> in the panel).
+            Transparent SVGs or PNGs work best; the logo is fitted to the shot
+            by its visible bounds.
+          </li>
+          <li>
+            Tune the oil and the light in the panel: dome strength, depth,
+            dispersion, highlights.
+          </li>
+          <li>
+            <em>Download MP4</em> renders the whole sting in your browser, at
+            1080p or 4K. For batch renders, the repo's
+            <code>pnpm render</code> does the same in headless Chrome.
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Make your own, in a dish of oil</h2>
+        <p>
+          The physical version is within reach of a weekend and a modest budget.
+          What matters is a steady top-down camera, clean oil, low notes and a
+          dark room.
+        </p>
+        <ul class="kit">
+          <li>
+            <strong>A shallow clear tray:</strong> a glass baking dish or an
+            acrylic box, 3–5 cm deep.
+          </li>
+          <li>
+            <strong>Mineral oil:</strong> 1–2 litres of food-grade or baby oil.
+            Its viscosity makes ripples look like glass, and it hides clear
+            acrylic.
+          </li>
+          <li>
+            <strong>A tactile transducer:</strong> a bass shaker or "puck"
+            exciter and a small amplifier, bolted under the tray, never in the
+            oil.
+          </li>
+          <li>
+            <strong>The logo:</strong> laser-cut clear acrylic on a black floor,
+            or a print on transparency film over a black card, lit evenly.
+          </li>
+          <li>
+            <strong>A camera:</strong> a phone's 120–240 fps slow motion is
+            enough. Mount it straight down, as far away as you can with a long
+            lens, to keep the view flat.
+          </li>
+          <li>
+            <strong>Light:</strong> one soft LED panel off to the side. Its
+            reflection draws the highlights on the dome and the rims.
+          </li>
+        </ul>
+        <ol>
+          <li>
+            Play single sine tones between 30 and 70 Hz. Start quiet; high or
+            loud notes churn the oil into noise.
+          </li>
+          <li>
+            Short bursts read better than sustained tones: a swell, then let the
+            oil settle on camera.
+          </li>
+          <li>
+            Push a small dome with a plunger or a clear disc on a rod under the
+            surface for the lens shots.
+          </li>
+          <li>
+            Film many takes, pick the cleanest, and grade to black. A soft mask
+            that grows from the centre recreates the reveal.
+          </li>
+        </ol>
+        <p class="note">
+          Keep electronics out of the oil, wipe spills straight away (oil makes
+          floors slick), and don't heat it.
+        </p>
+      </section>
+
+      <section>
+        <h2>Credits</h2>
+        <p>
+          The original identity is by Apple Music and TBWA\Media Arts Lab, with
+          music by Fred again.. and NEST Acoustics; the behind-the-scenes film
+          was directed by Joe Jackson, produced by Optical Arts, with VFX by
+          Time Based Arts and colour by Trafik. This page and its simulation are
+          an unofficial study, not affiliated with Apple. Apple and Apple Music
+          are trademarks of Apple Inc.; the demo brand here is our own.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="/src/explainer.ts"></script>
+  </body>
+</html>

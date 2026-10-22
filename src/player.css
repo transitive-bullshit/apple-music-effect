@@ -25,10 +25,30 @@ canvas {
 }
 
 .stage {
+  position: relative;
   display: grid;
   place-items: center;
   min-height: 0;
   overflow: hidden;
+}
+
+.stage.dropping canvas {
+  outline: 2px dashed #8fb4ff;
+  outline-offset: -6px;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  background: rgb(0 0 0 / 0.6);
+}
+
+/* display: grid above would otherwise override the hidden attribute */
+.overlay[hidden] {
+  display: none;
 }
 
 .controls {

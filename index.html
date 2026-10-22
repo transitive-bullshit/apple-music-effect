@@ -3,12 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Apple Music Effect</title>
+    <title>Made by Sound</title>
     <meta name="theme-color" content="#050307" />
     <link rel="icon" href="data:," />
   </head>
   <body>
-    <main class="stage"><canvas></canvas></main>
+    <main class="stage">
+      <canvas></canvas>
+      <div class="overlay" data-overlay hidden></div>
+    </main>
+    <input
+      type="file"
+      accept="image/svg+xml,image/png,image/jpeg,image/webp"
+      hidden
+      data-file
+    />
     <div class="controls">
       <button type="button" data-play>Play</button>
       <input

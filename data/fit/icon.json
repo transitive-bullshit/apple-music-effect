@@ -1,0 +1,351 @@
+{
+  "shot": "icon",
+  "start": 0.0,
+  "frames": [
+    {
+      "t": 0.209,
+      "lens": {
+        "exponent": 2.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.415,
+        "height": 0.0667,
+        "crown": 0.79512,
+        "shoulder": 0.16772,
+        "shiftX": 0.00328,
+        "shiftY": -0.01892
+      },
+      "score": 0.06405
+    },
+    {
+      "t": 0.25,
+      "lens": {
+        "exponent": 2.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.44,
+        "height": 0.06904,
+        "crown": 0.83865,
+        "shoulder": 0.10744,
+        "shiftX": 0.0134,
+        "shiftY": -0.0066
+      },
+      "score": 0.06134
+    },
+    {
+      "t": 0.292,
+      "lens": {
+        "exponent": 2.36,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.4475,
+        "height": 0.06744,
+        "crown": 0.87937,
+        "shoulder": 0.0311,
+        "shiftX": 0.01572,
+        "shiftY": 0.00275
+      },
+      "score": 0.05611
+    },
+    {
+      "t": 0.334,
+      "lens": {
+        "exponent": 3.596,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.455,
+        "height": 0.07657,
+        "crown": 0.73588,
+        "shoulder": 0.04284,
+        "shiftX": 0.01213,
+        "shiftY": -0.00143
+      },
+      "score": 0.05737
+    },
+    {
+      "t": 0.375,
+      "lens": {
+        "exponent": 4.58,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.472,
+        "height": 0.08797,
+        "crown": 0.60695,
+        "shoulder": 0.07546,
+        "shiftX": 0.00845,
+        "shiftY": 0.00229
+      },
+      "score": 0.05691
+    },
+    {
+      "t": 0.417,
+      "lens": {
+        "exponent": 4.85857,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.478,
+        "height": 0.09326,
+        "crown": 0.58684,
+        "shoulder": 0.07431,
+        "shiftX": 0.00628,
+        "shiftY": 0.00287
+      },
+      "score": 0.05695
+    },
+    {
+      "t": 0.459,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.48357,
+        "height": 0.09181,
+        "crown": 0.58714,
+        "shoulder": 0.0711,
+        "shiftX": 0.00749,
+        "shiftY": 0.00069
+      },
+      "score": 0.04311
+    },
+    {
+      "t": 0.5,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.489,
+        "height": 0.09577,
+        "crown": 0.54846,
+        "shoulder": 0.09483,
+        "shiftX": 0.00567,
+        "shiftY": 0.00308
+      },
+      "score": 0.03592
+    },
+    {
+      "t": 0.542,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.498,
+        "height": 0.098,
+        "crown": 0.50445,
+        "shoulder": 0.12744,
+        "shiftX": 0.00808,
+        "shiftY": 0.00213
+      },
+      "score": 0.03133
+    },
+    {
+      "t": 0.584,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.507,
+        "height": 0.0951,
+        "crown": 0.50018,
+        "shoulder": 0.13109,
+        "shiftX": 0.00725,
+        "shiftY": 0.00583
+      },
+      "score": 0.02865
+    },
+    {
+      "t": 0.626,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.51257,
+        "height": 0.10594,
+        "crown": 0.38986,
+        "shoulder": 0.20265,
+        "shiftX": 0.01024,
+        "shiftY": 0.00391
+      },
+      "score": 0.03255
+    },
+    {
+      "t": 0.667,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.518,
+        "height": 0.10906,
+        "crown": 0.35673,
+        "shoulder": 0.22883,
+        "shiftX": 0.00999,
+        "shiftY": 0.00023
+      },
+      "score": 0.0325
+    },
+    {
+      "t": 0.709,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.522,
+        "height": 0.10547,
+        "crown": 0.3174,
+        "shoulder": 0.25515,
+        "shiftX": 0.0116,
+        "shiftY": 0.00444
+      },
+      "score": 0.04074
+    },
+    {
+      "t": 0.751,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.526,
+        "height": 0.10562,
+        "crown": 0.31363,
+        "shoulder": 0.25235,
+        "shiftX": 0.01135,
+        "shiftY": 0.00426
+      },
+      "score": 0.04102
+    },
+    {
+      "t": 0.792,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.52847,
+        "height": 0.10622,
+        "crown": 0.29699,
+        "shoulder": 0.26243,
+        "shiftX": 0.01191,
+        "shiftY": 0.00757
+      },
+      "score": 0.04147
+    },
+    {
+      "t": 0.834,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.531,
+        "height": 0.10627,
+        "crown": 0.31251,
+        "shoulder": 0.24316,
+        "shiftX": 0.01066,
+        "shiftY": 0.00914
+      },
+      "score": 0.04314
+    },
+    {
+      "t": 0.876,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.53201,
+        "height": 0.10487,
+        "crown": 0.26378,
+        "shoulder": 0.27784,
+        "shiftX": 0.00951,
+        "shiftY": 0.00997
+      },
+      "score": 0.04519
+    },
+    {
+      "t": 0.918,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.53301,
+        "height": 0.10465,
+        "crown": 0.26396,
+        "shoulder": 0.28003,
+        "shiftX": 0.00956,
+        "shiftY": 0.01022
+      },
+      "score": 0.04452
+    },
+    {
+      "t": 0.959,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.53399,
+        "height": 0.10263,
+        "crown": 0.25748,
+        "shoulder": 0.28835,
+        "shiftX": 0.00859,
+        "shiftY": 0.0105
+      },
+      "score": 0.04401
+    },
+    {
+      "t": 1.001,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.535,
+        "height": 0.1003,
+        "crown": 0.2263,
+        "shoulder": 0.30941,
+        "shiftX": 0.00685,
+        "shiftY": 0.01076
+      },
+      "score": 0.04392
+    },
+    {
+      "t": 1.043,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.53626,
+        "height": 0.09773,
+        "crown": 0.18784,
+        "shoulder": 0.33116,
+        "shiftX": 0.00564,
+        "shiftY": 0.00958
+      },
+      "score": 0.04356
+    },
+    {
+      "t": 1.084,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.53749,
+        "height": 0.09612,
+        "crown": 0.14473,
+        "shoulder": 0.36164,
+        "shiftX": 0.00531,
+        "shiftY": 0.00925
+      },
+      "score": 0.04276
+    },
+    {
+      "t": 1.126,
+      "lens": {
+        "exponent": 5.0,
+        "flat": 16.0,
+        "edge": 0.3,
+        "radius": 0.53874,
+        "height": 0.09315,
+        "crown": 0.12136,
+        "shoulder": 0.38349,
+        "shiftX": 0.00679,
+        "shiftY": 0.00808
+      },
+      "score": 0.04254
+    }
+  ]
+}

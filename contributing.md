@@ -2,69 +2,88 @@
 
 ## Setup
 
-- Node 24+, pnpm, [uv](https://docs.astral.sh/uv/), ffmpeg, and Google Chrome (renders drive the installed Chrome through Playwright).
-- `pnpm install` and `uv sync`. The beat analysis needs librosa from the optional `analysis` group: `uv run --group analysis …`.
-- `pnpm dev` serves through [portless](https://portless.sh) at https://apple-music-effect.localhost; its first run asks for sudo once, to trust a local certificate and bind port 443. `PORTLESS=0 pnpm dev` skips it and serves http://127.0.0.1:5215.
+- Node 24+, pnpm, [uv](https://docs.astral.sh/uv/), ffmpeg, Google Chrome (renders drive the installed Chrome through Playwright), and ImageMagick for the comparison sheets.
+- `pnpm install` and `uv sync`. The analysis tools need the optional group: `uv run --group analysis …` (librosa, mlx-whisper on Apple Silicon, OpenCV, potracer, matplotlib).
+- `pnpm dev` serves through [portless](https://portless.sh) at https://apple-music-effect.localhost; `PORTLESS=0 pnpm dev` serves http://127.0.0.1:5215. The player is `/`, the explainer `/explainer.html`.
 - No API keys or environment variables.
 
-## Pipeline
+## Reference material (not in git)
+
+Matching Apple's film needs the film itself and its logos, all local-only in `reference/` and `media/`:
 
 ```bash
-# 1. put the song in media/ (not in git), then write its beats and tempo to data/timeline.json
-#    (with no song yet, `uv run python analysis/timeline.py` writes a silent 120 bpm placeholder)
-uv run --group analysis python analysis/timeline.py media/song.mp3
+# Apple's behind-the-scenes film (1080p) and the 4 s reel with the sting
+yt-dlp -f "270+bestaudio" --merge-output-format mkv -o "reference/youtube/apple-music-identity.%(ext)s" "https://www.youtube.com/watch?v=1XxNXkOHKZw"
+yt-dlp -o "reference/instagram/apple-music-reel.%(ext)s" "https://www.instagram.com/reels/DewrnLVuEUp/"
+ffmpeg -i reference/instagram/apple-music-reel.mp4 -vn -ac 1 -ar 48000 media/sting-reel.wav
 
-# 2. the preview player: space plays, the arrows step a frame (with shift, a beat), ?t=12.5 starts there
-pnpm dev
+# transcript with word timings, and the sting's timeline (writes data/timeline.json)
+uv run --group analysis python analysis/transcribe.py reference/youtube/apple-music-identity.mkv
+uv run --group analysis python analysis/timeline.py media/sting-reel.wav
 
-# 3. full-resolution stills, or a clip with the matching slice of the song
-pnpm render --stills 1.5,4 --out renders/stills
-pnpm render --from 0 --to 8 --fps 60 --w 1920 --h 1080 --out renders/test.mp4
+# the dome per frame, fitted to the refraction measured in the film (writes data/fit/<shot>.json;
+# the registration takes ~20 min a shot, --fit refits its saved result in seconds)
+uv run --group analysis python analysis/capture.py icon
+uv run --group analysis python analysis/capture.py icon --fit
 
-# 4. the player as a static site in dist/ (the song isn't bundled: copy it to dist/media/ to hear it)
-pnpm build
-pnpm preview
+# the new note and wordmark, traced from still frames of the film (frames/yt from ffmpeg)
+uv run --group analysis python analysis/trace.py frames/ref-icon/r-1.24.png --roi 815,365,280,355 --out reference/brand/traced/note-yt.svg
+uv run --group analysis python analysis/trace.py frames/yt/f_00151.png … frames/yt/f_00172.png --out reference/brand/traced/wordmark-yt.svg
 ```
+
+Without them the player and renders fall back to the demo brand in `public/demo/` and play silent.
+
+## Commands
+
+```bash
+pnpm dev                                    # the player and the explainer
+pnpm render --stills 0.6,2.2 --out renders/stills
+pnpm render --from 0 --to 4 --out renders/sting.mp4                       # 1080p with the sting
+pnpm render --w 3840 --h 2160 --query rows=1080 --out renders/sting-4k.mp4  # 4K, finer oil
+pnpm render --query "icon=demo/icon.svg&wordmark=demo/wordmark.svg" --out renders/demo.mp4
+
+# beside Apple's film: reference frames on top, the simulation below
+pnpm compare --times 0.17,0.33,0.6,1 --crop 560,140,800,800 --out renders/compare/icon.png
+pnpm compare --shot wordmark --step 0.125 --crop 410,330,1100,420
+
+# score parameter sets by pixel error against the film (a rough guide; see docs/effect-analysis.md)
+pnpm score --times 0.6,0.8,1 --query "p0.lensEdge=0.4" --query "p0.lensEdge=0.6"
+```
+
+Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot) to override a parameter, `?icon=` and `?wordmark=` to swap logos, `?fit=a.json,b.json` to try other fitted domes (`?fit=none` for the keyframes alone), and in render mode `?debug=1..5` (surface height, slope, glass, ray offset, offset direction) with `&debugScale=`.
 
 ## Where things live
 
-| Step | Code | Output |
-| --- | --- | --- |
-| Beat and tempo analysis | `analysis/timeline.py` | `data/timeline.json` |
-| Timeline schema and time helpers | `src/timeline.ts` |  |
-| The frame, a pure function of song time | `src/frame.ts` |  |
-| Preview player and its clock | `index.html`, `src/player.ts`, `src/clock.ts`, `src/player.css` | `dist/` |
-| Render mode (`?mode=render`) | `src/main.ts` |  |
-| Headless renderer (Chrome, then ffmpeg x264) | `scripts/render.ts` | `renders/` |
+| Part | Code |
+| --- | --- |
+| The film: shots, keyframes, every parameter | `src/scene.ts` |
+| The dome fitted to the film, per frame | `data/fit/`, `src/fits.ts`, `analysis/capture.py` |
+| Keyframe interpolation, the rig's wobble | `src/driver.ts` |
+| Engine: oil stepping, subframes, bloom | `src/engine.ts` |
+| Shaders: shallow water, dome, optics, finish | `src/shaders.ts` |
+| WebGL2 helpers | `src/gl.ts` |
+| Logos: rasterizing, masks, distance fields | `src/assets.ts` |
+| Fitting any logo to a shot, the demo brand | `src/brand.ts`, `public/demo/` |
+| Player, panel, MP4 export | `src/player.ts`, `src/panel.ts`, `src/export.ts` |
+| Explainer | `explainer.html`, `src/explainer.ts` |
+| Headless render, comparison, scoring | `scripts/render.ts`, `scripts/compare.ts`, `scripts/score.ts` |
+| Analysis: transcript, sting timeline, tracing, capture | `analysis/` |
+| What the film shows, the physics, how it was matched | `docs/effect-analysis.md` |
 
-## Changing the look
+## Tuning a moment
 
-1. Edit `drawFrame` in `src/frame.ts`. It gets the canvas context, the song time and the timeline, and must draw the same picture for the same time.
-2. Preview it with `pnpm dev`, which reloads on save; `?t=` jumps to a moment.
-3. Check a full-resolution still: `pnpm render --stills <seconds>`.
+1. Find the shot and its keyframes in `src/scene.ts` (shot time = film time − the shot's start).
+2. `pnpm compare --times <film times> --crop …` to see it beside the film; try values with `--query "p0.name=value"` first.
+3. For the dome, measure rather than guess: `analysis/capture.py` fits it to the film's refraction (its footprint, rim falloff and fitted keys are set at the top of the script); the keyframes in `src/scene.ts` cover only the frames outside the fit.
+4. Move what works into `src/scene.ts` and compare again.
 
-If the look needs more from the song (sections, lyrics, loudness), extend `build` and `validate` in `analysis/timeline.py` and `TimelineSchema` in `src/timeline.ts` together, then rerun the analysis.
+## Tests
 
-## Tests and CI
-
-- `pnpm test`: format (oxfmt), lint (oxlint), types (tsc), and `test/timeline.test.ts` (the committed timeline parses; the beat and frame-time helpers).
-- `uv run pytest -q`: `tests/test_timeline.py` (the committed timeline is valid; the builder sorts and clips beats).
-- CI (`.github/workflows/test.yml`) runs both on every push, plus `pnpm build` and `py_compile`. It's offline: no audio, no Chrome renders, no secrets.
-
-## Repo map
-
-```
-analysis/     Python analysis: the song -> data/timeline.json
-data/         timeline.json, the committed analysis result
-scripts/      render.ts, the headless renderer
-src/          the renderer and the preview player
-test/         TypeScript tests (vitest)
-tests/        Python tests (pytest)
-index.html    the player page; ?mode=render is the bare canvas the renderer captures
-```
+- `pnpm test`: format, lint, types, and `test/` (keyframe interpolation, the wobble, the film's timeline, the sting timeline).
+- `uv run pytest -q`: `tests/` (the committed timeline).
+- CI runs both, plus `pnpm build` and `py_compile`, offline. Renders and comparisons need Chrome and the reference film, so they stay local.
 
 ## Not in the repo, on purpose
 
-- `media/`: the song, which is copyrighted source material. `.gitignore` also blocks audio and video by extension. Without it, the player and renders run silent.
-- `reference/`: reference videos and screenshots, for the same reason.
-- `renders/`, `dist/`, `analysis/out/`: regenerable output.
+- `reference/` and `media/`: Apple's film, reel, sting and logos (including the traced ones), which are Apple's copyrighted work and trademarks.
+- `frames/`, `renders/`, `dist/`: regenerable output.
