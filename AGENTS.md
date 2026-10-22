@@ -28,7 +28,7 @@ The film (`src/scene.ts`) is two shots, icon then wordmark, each a logo under on
 
 ## Not in git
 
-- `reference/` (Apple's film, reel and logos, including our traces) and `media/` (the sting): copyrighted and trademarked, never committed. Without them everything falls back to the demo brand in `public/demo/` and plays silent. The one deliberate exception: the readme's comparison stills, `docs/film-before-now.webp`.
+- `reference/` (Apple's film, reel and logos, including our traces) and `media/` (the sting): copyrighted and trademarked, never committed. Without them everything falls back to the demo brand in `public/demo/` and plays silent. The deliberate exceptions: the readme's comparison stills (`docs/film-before-now.webp`) and the site's share image (`public/og.png`, our render of Apple's wordmark).
 - `frames/`, `renders/`, `dist/`, `analysis/out/` (the capture's registrations): regenerable output.
 - `readme.md` is marketing; technical docs go in `contributing.md`.
 

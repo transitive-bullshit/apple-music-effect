@@ -30,7 +30,7 @@ onto it, and export a 1080p MP4. Read contributing.md for the render and compari
 
 ## License
 
-The code is [MIT](license) © [Travis Fischer](https://x.com/transitive_bs). This is an unofficial study, not affiliated with Apple. Apple and Apple Music are trademarks of Apple Inc.; the repo ships its own demo brand, and apart from the comparison stills above, Apple's film, music and logos are not included.
+The code is [MIT](license) © [Travis Fischer](https://x.com/transitive_bs). This is an unofficial study, not affiliated with Apple. Apple and Apple Music are trademarks of Apple Inc.; the repo ships its own demo brand, and apart from the comparison stills above and the site's share image, Apple's film, music and logos are not included.
 
 ---
 
