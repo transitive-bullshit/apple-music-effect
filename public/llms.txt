@@ -1,0 +1,20 @@
+# Made by Sound, Made by Code
+
+> A real-time, physically based recreation of the liquid logo animation from Apple Music's "Made by Sound" identity (October 2026): a lens of oil, ray traced per wavelength in the browser with WebGL2, that works with any logo. An unofficial study by Travis Fischer, not affiliated with Apple; the site ships its own demo brand.
+
+Apple filmed its mark in a tray of mineral oil, rippled by a two-note sting. This site rebuilds the effect as a closed-form dome of oil animated by a few smooth curves fitted to Apple's film, with spectral ray tracing for the rainbow fringes. Every frame is a pure function of time, so the live preview and exported videos agree.
+
+## Pages
+
+- [Player](https://apple-music-effect.vercel.app/): plays the 4-second effect live. Drop in your own icon and wordmark, tune the oil and the light, and export a 1080p or 4K MP4 in the browser.
+- [Explainer](https://apple-music-effect.vercel.app/explainer): how the original was filmed, the physics behind it (refraction through a dome of oil, dispersion, the reveal), how this recreation works, and how to make your own in code or in a dish of oil.
+
+## How it works
+
+- The oil's surface is one analytic dome per shot: a superellipse footprint with a round crown, a shoulder and a steep rim. Four smooth curves animate it (radius, height, a morph from circle to rounded square, a settle between two profiles), fitted to the refraction measured in Apple's film.
+- Per pixel, the view ray refracts through the surface by Snell's law for 12 wavelengths, with dispersion gathered on steep slopes, weighted by the CIE 1931 colour-matching functions, and lands on the logo below. Fresnel reflections of a procedural studio light the rims.
+- A frame accumulates 8 subframes across a 180-degree shutter for motion blur, then bloom, a film-matched grade and a vignette.
+
+## Optional
+
+- [Author](https://x.com/transitive_bs): Travis Fischer.

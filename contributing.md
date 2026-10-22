@@ -86,6 +86,12 @@ Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot
 - `uv run pytest -q`: `tests/` (the committed timeline).
 - CI runs both, plus `pnpm build` and `py_compile`, offline. Renders and comparisons need Chrome and the reference film, so they stay local.
 
+## Deploy
+
+The site deploys to Vercel from GitHub: every push to `main` builds production (https://apple-music-effect.vercel.app), other branches get preview URLs. `vercel.json` sets the Vite build, clean URLs and the caching (hashed `assets/` immutable for a year, other static files a day, HTML revalidated on every visit). The project pins pnpm through Corepack (`ENABLE_EXPERIMENTAL_COREPACK=1`), and Web Analytics loads only on the built site (`src/analytics.ts`). The share image, icons, `robots.txt`, `sitemap.xml` and `llms.txt` live in `public/`.
+
+Deployed, there's no reference material, so the site shows the demo brand and plays silent.
+
 ## Not in the repo, on purpose
 
 - `reference/` and `media/`: Apple's film, reel, sting and logos (including the traced ones), which are Apple's copyrighted work and trademarks.

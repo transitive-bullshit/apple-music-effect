@@ -26,6 +26,7 @@
     "fix:lint": "oxlint --fix"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "dialkit": "^2.0.2",
     "mediabunny": "^1.62.0",
     "zod": "^4.6.7"

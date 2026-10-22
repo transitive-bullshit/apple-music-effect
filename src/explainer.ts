@@ -4,6 +4,7 @@
 
 import './explainer.css'
 
+import { startAnalytics } from './analytics'
 import { fitLogo } from './brand'
 import { Engine } from './engine'
 import { APPLE_MUSIC, type Film } from './scene'
@@ -24,6 +25,7 @@ async function demoFilm(): Promise<Film> {
 }
 
 async function main() {
+  startAnalytics()
   const film = await demoFilm()
   const figures = [
     ...document.querySelectorAll<HTMLCanvasElement>('canvas[data-figure]')

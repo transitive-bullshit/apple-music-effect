@@ -7,6 +7,7 @@
 
 import './player.css'
 
+import { startAnalytics } from './analytics'
 import { resolveLogos } from './brand'
 import { Engine } from './engine'
 import { createPlayer } from './player'
@@ -65,6 +66,7 @@ async function main() {
     return
   }
 
+  startAnalytics()
   const canvas = document.querySelector<HTMLCanvasElement>('.stage canvas')!
   const engine = await Engine.create(canvas, film, {
     width: Number(params.get('w') ?? 1280),

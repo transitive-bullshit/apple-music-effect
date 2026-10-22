@@ -1,0 +1,14 @@
+{
+  "name": "Made by Sound, Made by Code",
+  "short_name": "Made by Sound",
+  "description": "A real-time liquid logo effect, ray traced in the browser. Bring your own logo.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050307",
+  "theme_color": "#050307",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "/apple-touch-icon.png", "type": "image/png", "sizes": "180x180" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}

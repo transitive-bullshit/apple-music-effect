@@ -4,8 +4,23 @@
     {
       "name": "player",
       "runtimeExecutable": "env",
-      "runtimeArgs": ["PORTLESS=0", "pnpm", "dev"],
+      "runtimeArgs": [
+        "PORTLESS=0",
+        "pnpm",
+        "dev"
+      ],
       "port": 5215
+    },
+    {
+      "name": "site",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "preview",
+        "--port",
+        "5216",
+        "--strictPort"
+      ],
+      "port": 5216
     }
   ]
 }
