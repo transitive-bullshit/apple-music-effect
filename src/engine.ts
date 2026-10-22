@@ -221,12 +221,21 @@ export class Engine {
         ]
       : [0, 0, 0, 0]
     const colour = shot.colour ? interpolate(shot.colour, local) : 1
+    // the logo recedes about its centre
+    const k = shot.recede ? interpolate(shot.recede, local) : 1
+    const [lx, ly, lw, lh] = a.logoRect
+    const logoRect = [
+      lx + (lw * (1 - k)) / 2,
+      ly + (lh * (1 - k)) / 2,
+      lw * k,
+      lh * k
+    ]
     this.passes.optics!.draw(this.color, {
       uViewCenter: [0, 0],
       uViewHalfHeight: half,
       uAspect: this.film.aspect,
       uLogo: { tex: a.logo },
-      uLogoRect: a.logoRect,
+      uLogoRect: logoRect,
       uLogoTexels: a.logoTexels,
       uLogoColor: p.logoColor,
       uFloorColor: p.floorColor,
@@ -246,9 +255,10 @@ export class Engine {
       uBall: ball,
       uLensCenter: shot.dome.center,
       uLens: [d.radius, d.height, d.exponent],
+      uLensAspect: d.aspect,
       uLensProfile: [d.crown, d.flat, d.shoulder],
       uLensEdge: d.edge,
-      uLensRing: [d.ring, p.ringWidth, p.ringWavelength, p.ringOffset],
+      uLensRing: [d.ring, p.ringWidth, p.ringWavelength, d.ringReach],
       // the wave's crests travel outward at ringSpeed
       uLensRingPhase:
         p.ringWavelength > 0
@@ -297,6 +307,10 @@ export class Engine {
       uFade: fade,
       uVignette: p.vignette,
       uGrain: p.grain,
+      uSaturation: p.saturation,
+      uGlowTint: p.glowTint,
+      uBalance: p.balance,
+      uBlack: p.black,
       uSeed: 0,
       uAspect: this.film.aspect
     })

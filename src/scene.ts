@@ -68,6 +68,14 @@ export interface Params {
   bloomRadius: number
   grain: number
   vignette: number
+  /** the grade's saturation: 1 leaves colour as rendered */
+  saturation: number
+  /** the display level crushed to black, 0..1 */
+  black: number
+  /** the glow's colour (the bloom's tint) */
+  glowTint: readonly [number, number, number]
+  /** white balance: a gain per channel */
+  balance: readonly [number, number, number]
 
   // camera
   /** shutter as a fraction of the frame interval (0.5 is a 180° shutter) */
@@ -100,7 +108,7 @@ export const DEFAULT_PARAMS: Params = {
   softbox: 20,
   horizon: 6,
   ringLight: 0,
-  ringLightWidth: 0.15,
+  ringLightWidth: 0.45,
 
   exposure: 1,
   logoColor: [0.93, 0.95, 1],
@@ -110,6 +118,12 @@ export const DEFAULT_PARAMS: Params = {
   // the film has none: its held frames are perfectly still
   grain: 0,
   vignette: 0.25,
+  // the film's grade: richer colour than the oil gives on its own, and crushed blacks
+  saturation: 1.5,
+  black: 0.012,
+  // the film's glows and soft edges are blue, its whites slightly cool
+  glowTint: [0.55, 0.75, 1.35],
+  balance: [0.97, 1, 1.03],
 
   shutter: 0.5,
   // enough that fast smears blur rather than stutter
@@ -136,6 +150,8 @@ export interface Shot {
   dome: DomeSpec
   /** the wave train on the dome's edge: its height over shot time (none if absent) */
   ring?: readonly Key[]
+  /** how far outside the dome's rim that wave runs over shot time, units (params.ringOffset if absent) */
+  ringReach?: readonly Key[]
   /** the rod's ripples: their height at the shot's start (units), decaying with a time constant (s),
    * and gone once the dome has settled */
   ripple?: { height: number; decay: number }
@@ -149,6 +165,8 @@ export interface Shot {
   gloss?: readonly Key[]
   /** camera zoom over shot time */
   zoom: readonly Key[]
+  /** the logo's size over shot time as it recedes from the camera, about its centre (1 if absent) */
+  recede?: readonly Key[]
   params: Partial<Params>
 }
 
@@ -205,15 +223,31 @@ export const APPLE_MUSIC: Film = {
         [0.1, 0.3],
         [0.21, 1]
       ],
-      // a ripple runs just ahead of the bubble's rim while it grows
+      // a ripple runs just ahead of the bubble's rim while it grows; then a wave of displaced oil
+      // leaves the tile's edge (0.55-1 s), travelling outward at about 0.5 units/s and fading,
+      // its flanks catching the side lights (measured off the film's outer lines)
       ring: [
         [0.1, 0],
         [0.2, 0.012],
         [0.3, 0.008],
-        [0.42, 0]
+        [0.42, 0],
+        [0.5, 0],
+        [0.62, 0.012],
+        [0.85, 0.008],
+        [1.0, 0]
       ],
-      // the camera pulls back from 1.2 s, accelerating into the cut (measured off the note's size)
-      zoom: [
+      ringReach: [
+        [0.1, 0.05],
+        [0.42, 0.05],
+        [0.55, 0.03],
+        [0.63, 0.07],
+        [0.8, 0.16],
+        [1.0, 0.26]
+      ],
+      // the camera holds; from 1.2 s the note recedes into the dark, accelerating into the cut,
+      // while the tile's outline keeps its size and fades (measured off the note's size)
+      zoom: [[0, 1]],
+      recede: [
         [1.2, 1],
         [1.24, 0.973],
         [1.273, 0.926],
@@ -232,8 +266,10 @@ export const APPLE_MUSIC: Film = {
         dispersionKnee: 0.9,
         maxSlope: 1.4,
         softbox: 4,
-        ringOffset: 0.05,
-        ringWidth: 0.02
+        ringWidth: 0.02,
+        // the fitted dome a little lower: the registration over-reads the smears' width, and 0.9
+        // brings the lit area, colour and sharpness closest to the film's (by the scorecard)
+        dome: 0.9
       }
     },
     {
@@ -301,7 +337,6 @@ export const APPLE_MUSIC: Film = {
         softbox: 2,
         horizon: 0.25,
         ringLight: 1.3,
-        ringLightWidth: 0.45,
         rippleWavelength: 0.08,
         dispersion: 60,
         dispersionKnee: 0.3

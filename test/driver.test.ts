@@ -39,10 +39,12 @@ describe('driver', () => {
     for (const shot of shots)
       for (const keys of [
         shot.zoom,
+        shot.recede ?? [],
         shot.fade,
         shot.colour ?? [],
         shot.gloss ?? [],
         shot.ring ?? [],
+        shot.ringReach ?? [],
         shot.ball?.lift ?? [],
         shot.dome.radius,
         shot.dome.height,

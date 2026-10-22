@@ -59,9 +59,11 @@ function animated(shot: Shot) {
     shot.dome.settle,
     shot.fade,
     shot.zoom,
+    shot.recede,
     shot.colour,
     shot.gloss,
     shot.ring,
+    shot.ringReach,
     shot.ball?.lift
   ].filter((keys) => keys && keys.length > 1)
 }
@@ -83,6 +85,7 @@ describe('the animation is smooth (continuous in value and slope)', () => {
       const curves = {
         fade: (t: number) => interpolate(shot.fade, t),
         zoom: (t: number) => interpolate(shot.zoom, t),
+        recede: (t: number) => (shot.recede ? interpolate(shot.recede, t) : 1),
         colour: (t: number) => (shot.colour ? interpolate(shot.colour, t) : 1),
         gloss: (t: number) => (shot.gloss ? interpolate(shot.gloss, t) : 1),
         lift: (t: number) => (shot.ball ? interpolate(shot.ball.lift, t) : 0)
@@ -92,7 +95,7 @@ describe('the animation is smooth (continuous in value and slope)', () => {
 
     test(`${shot.name}: a few curves with a few keys move everything`, () => {
       const curves = animated(shot)
-      expect(curves.length).toBeLessThanOrEqual(8)
+      expect(curves.length).toBeLessThanOrEqual(10)
       for (const keys of curves) expect(keys!.length).toBeLessThanOrEqual(9)
     })
   }

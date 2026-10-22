@@ -34,7 +34,8 @@ uniform float uRingLight;
 uniform float uRingWidth;  // its angular spread (in tan of the angle off the axis): wider is softer
 uniform vec4 uBall;        // xy centre, z height of centre, w radius (0 for none)
 uniform vec2 uLensCenter;
-uniform vec3 uLens;        // radius (half-size), height, superellipse exponent
+uniform vec3 uLens;        // radius (half-height), height, superellipse exponent
+uniform float uLensAspect; // the footprint's width over its height
 uniform vec3 uLensProfile; // crown, flat, shoulder
 uniform float uLensEdge;
 uniform vec4 uLensRing;    // the wave on its edge: amplitude, width, wavelength (0: a single crest), and how far outside the rim it runs
@@ -53,16 +54,18 @@ float hash(vec2 p) {
   return fract((p3.x + p3.y) * p3.z);
 }
 
-// The dome: H exp(-crown r² - shoulder r⁴) (1 - rho^flat)^edge, with r the round distance and rho
-// the footprint's (exponent 2 is a circle; ~5 the icon's rounded square). The crown magnifies
+// The dome: H exp(-crown r² - shoulder r⁴) (1 - rho^flat)^edge, with r the distance and rho the
+// footprint's, both in units of its half-size (exponent 2 is an ellipse; ~3-5 a rounded rectangle). The crown magnifies
 // radially, the shoulder steepens it toward the rim, and the falloff is a steep rim that follows the
 // footprint; the round part stays positive into the footprint's corners, so they stay smooth. A
 // wave on its edge (the bubble's leading ripple, the wordmark's echoes) rides outside it.
 float lensZ(vec2 p) {
   if (uLens.x <= 0.0) return 0.0;
-  vec2 d = abs(p - uLensCenter) / uLens.x;
+  vec2 o = p - uLensCenter;
+  vec2 d = abs(o) / (uLens.x * vec2(uLensAspect, 1.0));
   float rho = pow(pow(d.x, uLens.z) + pow(d.y, uLens.z), 1.0 / uLens.z);
-  float dist = (rho - 1.0) * uLens.x;
+  // distance from the rim along the way out from the centre
+  float dist = length(o) * (1.0 - 1.0 / max(rho, 1e-4));
   float e = (dist - uLensRing.w) / max(uLensRing.y, 1e-4);
   float train = uLensRing.z > 0.0 ? cos(6.2831853 * (dist - uLensRing.w) / uLensRing.z - uLensRingPhase) : 1.0;
   float ring = uLensRing.x * exp(-e * e) * train;
@@ -130,7 +133,7 @@ vec3 env(vec3 r) {
 // the floor is lit only where the dome has reached (its footprint at the current size)
 float revealAt(vec2 q) {
   if (uReveal < 0.5 || uLens.x <= 0.0) return 1.0;
-  vec2 d = abs(q - uLensCenter) / uLens.x;
+  vec2 d = abs(q - uLensCenter) / (uLens.x * vec2(uLensAspect, 1.0));
   float rho = pow(pow(d.x, uLens.z) + pow(d.y, uLens.z), 1.0 / uLens.z);
   return 1.0 - smoothstep(1.0 - uRevealSoft, 1.0, rho);
 }
@@ -154,10 +157,11 @@ void main() {
       if (zHit > surface(p)) {
         vec3 N = normalize(vec3(d, zHit - uBall.z));
         vec3 R = reflect(V, N);
-        // polished steel: the softboxes as highlights, the studio's walls muted, the camera dark
+        // polished steel in a dark studio, as the film's: mostly dark, the softboxes as highlights,
+        // a dim rim from the walls, the camera dark
         vec2 s = R.xy / max(R.z, 0.05);
-        float walls = 0.35 * smoothstep(0.2, 3.0, length(s));
-        vec3 col = 0.8 * (env(R) - vec3(uHorizon * smoothstep(1.2, 4.0, length(s)))) + walls + 0.08;
+        float walls = 0.12 * smoothstep(0.4, 3.0, length(s));
+        vec3 col = 0.5 * (env(R) - vec3(uHorizon * smoothstep(1.2, 4.0, length(s)))) + walls + 0.015;
         col *= mix(1.0, 0.35, smoothstep(0.9, 0.995, R.z));
         outColor = vec4(col, 1.0);
         return;
@@ -279,6 +283,10 @@ uniform float uVignette;
 uniform float uGrain;
 uniform float uSeed;
 uniform float uAspect;
+uniform float uSaturation; // the grade: 1 leaves colour as rendered
+uniform vec3 uGlowTint;    // the colour of the glow around bright things (the bloom)
+uniform vec3 uBalance;     // white balance: per-channel gain
+uniform float uBlack;      // display level crushed to black
 out vec4 outColor;
 
 float hash(vec2 p) {
@@ -293,14 +301,18 @@ vec3 toSrgb(vec3 c) {
 
 void main() {
   vec3 c = texture(uSrc, vUv).rgb;
-  c += uBloomAmount * texture(uBloom, vUv).rgb;
+  c += uBloomAmount * uGlowTint * texture(uBloom, vUv).rgb;
+  c *= uBalance;
   vec2 v = (vUv - 0.5) * vec2(uAspect, 1.0);
   c *= 1.0 - uVignette * dot(v, v);
   c *= uExposure * uFade;
+  float lum = dot(c, vec3(0.2126, 0.7152, 0.0722));
+  c = max(vec3(lum) + (c - vec3(lum)) * uSaturation, 0.0);
   // a soft shoulder above 0.8 so blooming highlights roll off instead of clipping hard
   vec3 over = max(c - 0.8, 0.0);
   c = min(c, 0.8) + over / (1.0 + over / 0.2);
   vec3 s = toSrgb(clamp(c, 0.0, 1.0));
+  s = max(s - uBlack, 0.0) / (1.0 - uBlack);
   s += uGrain * (hash(gl_FragCoord.xy + uSeed * 31.0) - 0.5);
   outColor = vec4(s, 1.0);
 }

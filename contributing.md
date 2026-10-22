@@ -42,6 +42,9 @@ pnpm render --from 0 --to 4 --out renders/sting.mp4                       # 1080
 pnpm render --w 3840 --h 2160 --out renders/sting-4k.mp4                    # 4K
 pnpm render --query "icon=demo/icon.svg&wordmark=demo/wordmark.svg" --out renders/demo.mp4
 
+# how closely a render follows the film, as smoothed curves per shot (lower is closer)
+uv run --group analysis python analysis/scorecard.py before=renders/a.mp4 now=renders/b.mp4 --chart renders/scorecard.png
+
 # beside Apple's film: reference frames on top, the simulation below
 pnpm compare --times 0.17,0.33,0.6,1 --crop 560,140,800,800 --out renders/compare/icon.png
 pnpm compare --shot wordmark --step 0.125 --crop 410,330,1100,420

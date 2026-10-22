@@ -1,6 +1,6 @@
 // The rig's dome of oil over shot time. Four smooth curves animate it: its radius, its height, its
-// morph from a circle to the footprint's squircle, and its settle from one profile to another
-// (crown, shoulder, rim falloff). analysis/capture.py fits them to the film into
+// morph from a circle to the footprint's shape (a squircle for the icon, a long rounded oval for the
+// wordmark), and its settle from one profile to another (crown, shoulder, rim falloff). analysis/capture.py fits them to the film into
 // data/dome/<shot>.json; everything about the dome at any moment follows from them.
 
 import { z } from 'zod'
@@ -26,6 +26,8 @@ export interface DomeSpec {
   center: readonly [number, number]
   /** the footprint's superellipse exponent at full morph (2 stays a circle) */
   exponent: number
+  /** the footprint's width over its height at full morph (1 stays round; the radius is its half-height) */
+  aspect: number
   /** the profile at settle 0 and 1 */
   from: Profile
   to: Profile
@@ -44,10 +46,13 @@ export interface DomeState extends Profile {
   radius: number
   height: number
   exponent: number
+  aspect: number
   /** 0: the `from` profile, 1: the `to` profile */
   settle: number
   /** height of the wave train on its edge, units */
   ring: number
+  /** how far outside the rim it runs, units */
+  ringReach: number
   /** height of the rod's ripples on it, units */
   ripple: number
 }
@@ -69,6 +74,7 @@ const ProfileSchema = z.strictObject({
 const DomeSchema = z.object({
   center: z.tuple([z.number(), z.number()]),
   exponent: z.number().min(2),
+  aspect: z.number().positive(),
   from: ProfileSchema,
   to: ProfileSchema,
   radius: KeysSchema,
@@ -86,18 +92,21 @@ export function parseDome(data: unknown): DomeSpec {
 export function domeAt(shot: Shot, p: Params, t: number): DomeState {
   const d = shot.dome
   const settle = interpolate(d.settle, t)
+  const morph = interpolate(d.morph, t)
   const between = (key: keyof Profile) =>
     d.from[key] + (d.to[key] - d.from[key]) * settle
   return {
     radius: interpolate(d.radius, t),
     height: Math.max(0, interpolate(d.height, t)) * p.dome,
-    exponent: 2 + (d.exponent - 2) * interpolate(d.morph, t),
+    exponent: 2 + (d.exponent - 2) * morph,
+    aspect: 1 + (d.aspect - 1) * morph,
     settle,
     crown: between('crown'),
     shoulder: between('shoulder'),
     flat: between('flat'),
     edge: between('edge'),
     ring: shot.ring ? interpolate(shot.ring, t) : 0,
+    ringReach: shot.ringReach ? interpolate(shot.ringReach, t) : p.ringOffset,
     // the rod's ripples decay from the start, and are gone once the dome has settled
     ripple: shot.ripple
       ? shot.ripple.height * Math.exp(-t / shot.ripple.decay) * (1 - settle)
