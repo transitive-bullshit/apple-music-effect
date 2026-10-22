@@ -1,4 +1,4 @@
-# Made by Sound, Made by Code
+# Apple Music, Made by Code
 
 > A real-time, physically based recreation of the liquid logo animation from Apple Music's "Made by Sound" identity (October 2026): a lens of oil, ray traced per wavelength in the browser with WebGL2, that works with any logo. An unofficial study by Travis Fischer, not affiliated with Apple; the site ships its own demo brand.
 

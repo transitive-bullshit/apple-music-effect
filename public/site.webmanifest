@@ -1,6 +1,6 @@
 {
-  "name": "Made by Sound, Made by Code",
-  "short_name": "Made by Sound",
+  "name": "Apple Music, Made by Code",
+  "short_name": "Made by Code",
   "description": "A real-time liquid logo effect, ray traced in the browser. Bring your own logo.",
   "start_url": "/",
   "display": "standalone",

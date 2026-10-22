@@ -1,4 +1,4 @@
-# Made by Sound, Made by Code
+# Apple Music, Made by Code
 
 > A real-time recreation of the liquid logo animation from Apple Music's new identity: a physically based lens of oil, ray traced in the browser, that works with any logo.
 
