@@ -45,6 +45,8 @@ export interface Params {
   blur: number
   /** strength of the surface's reflection of the studio */
   reflect: number
+  /** what the reflection's strength becomes as the dome settles, relative to `reflect` */
+  settledReflect: number
   /** 1: the logo shows only within the dome's footprint (as in Apple's film) */
   reveal: number
   /** softness of the reveal's edge, as a fraction of the dome's radius */
@@ -90,6 +92,7 @@ export const DEFAULT_PARAMS: Params = {
   defocus: 0.05,
   blur: 0,
   reflect: 1,
+  settledReflect: 1,
   reveal: 1,
   revealSoft: 0.06,
   softbox: 20,
@@ -241,11 +244,12 @@ export const APPLE_MUSIC: Film = {
       // an orb around the rig's chrome tip that widens and settles into a wide, low dome whose
       // soft rim lies on the wordmark's ends, smearing them outward, then falls flat
       dome: parseDome(wordmarkDome),
-      // the echoes on the dome's edge while it stands (shot time = reel time - 1.465)
+      // the echoes on the dome's edge while it stands (shot time = reel time - 1.465): gentle, so
+      // they bend only the wordmark's ends into short lines, as in the film
       ring: [
         [0.5, 0],
-        [0.7, 0.008],
-        [1.45, 0.004],
+        [0.7, 0.004],
+        [1.45, 0.002],
         [1.8, 0]
       ],
       // the orb's rings, strongest as it appears
@@ -272,12 +276,14 @@ export const APPLE_MUSIC: Film = {
         ringWavelength: 0.06,
         ringWidth: 0.06,
         // the film's key and walls barely show in this dome; a ring light around the lens draws the
-        // orb's ripples as rings all the way round, and the wide dome as a faint circle
+        // orb's ripples as rings all the way round. Once it settles into the wide dome, nothing
+        // reflects: its ripple shows only where it bends the wordmark, fading out above and below
         softbox: 2,
         horizon: 0.25,
         ringLight: 2.5,
+        settledReflect: 0,
         rippleWavelength: 0.08,
-        dispersion: 100,
+        dispersion: 60,
         dispersionKnee: 0.3
       }
     }

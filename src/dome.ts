@@ -44,6 +44,8 @@ export interface DomeState extends Profile {
   radius: number
   height: number
   exponent: number
+  /** 0: the `from` profile, 1: the `to` profile */
+  settle: number
   /** height of the wave train on its edge, units */
   ring: number
   /** height of the rod's ripples on it, units */
@@ -90,6 +92,7 @@ export function domeAt(shot: Shot, p: Params, t: number): DomeState {
     radius: interpolate(d.radius, t),
     height: Math.max(0, interpolate(d.height, t)) * p.dome,
     exponent: 2 + (d.exponent - 2) * interpolate(d.morph, t),
+    settle,
     crown: between('crown'),
     shoulder: between('shoulder'),
     flat: between('flat'),
