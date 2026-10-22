@@ -51,6 +51,64 @@ canvas {
   display: none;
 }
 
+/* links to the explainer, the source and the author, opposite the panel's button (top right) and
+   level with it; shadcn's outline buttons, on the dark stage */
+.site-nav {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 42px;
+  font:
+    500 14px/1 system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.nav-button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 14px;
+  color: #f4f0f7;
+  text-decoration: none;
+  white-space: nowrap;
+  background: rgb(255 255 255 / 0.05);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+  backdrop-filter: blur(8px);
+  transition:
+    background-color 150ms,
+    border-color 150ms;
+}
+
+.nav-button.icon {
+  width: 36px;
+  padding: 0;
+}
+
+.nav-button svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.nav-button:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.nav-button:focus-visible {
+  border-color: rgb(255 255 255 / 0.5);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(255 255 255 / 0.2);
+}
+
 .controls {
   display: flex;
   gap: 12px;
