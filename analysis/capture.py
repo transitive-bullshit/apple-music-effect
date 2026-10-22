@@ -1,39 +1,37 @@
-"""Capture the oil's lens from Apple's film: per frame, the dome that refracts the clean logo into
-what the film shows.
+"""Capture the oil's dome from Apple's film: the few smooth curves that animate it, fitted to the
+refraction the film shows.
 
     uv run --group analysis python analysis/capture.py icon
     uv run --group analysis python analysis/capture.py icon --fit   # refit the saved registration
 
 For each reel frame, a B-spline registration (SimpleITK) finds the smooth warp that maps the film's
 pixels onto the clean logo at rest: where on the floor each pixel of the frame looks. That warp is a
-refraction field. The renderer's dome (lensZ in src/shaders.ts, refracted as in its optics) is then
-fitted to it by least squares, where the film's edges pin it down: over black floor nothing does,
-and at the rims the warp folds, so the warp itself is never rendered. The dome's footprint is the
-film's (its bright rim line, measured per frame), its rim's falloff fixed, and its height, crown and
-centre fitted.
+refraction field. Over black floor nothing constrains it and at the rims it folds, so it is never
+rendered: it only pins the dome where the film's edges do.
 
-The animation must be smooth, so the frames are fitted together: each value is a cubic B-spline in
-time, with its curvature penalised, rather than a fit per frame (which trades the crown against the
-shoulder from one frame to the next and jitters). A fit per frame only seeds it and drops the points
-that it can't explain.
+The dome (lensZ in src/shaders.ts) is animated by four curves over shot time: its radius, its
+height, its morph from a circle to the footprint's squircle, and its settle from one profile to
+another (crown, shoulder, rim falloff). Each curve has a few keys, interpolated as the renderer
+does (src/driver.ts), so the motion is smooth by construction. Keys the film can't measure (before
+the registration holds, the collapse) are set by hand; the rest, and any unset profile values, are
+fitted to every registered frame at once by least squares through the renderer's own optics.
 
-Writes data/fit/<shot>.json (the dome per frame, which the renderer loads), the registration in
-analysis/out/capture/<shot>.npz, and QA sheets (the film beside the warped logo) in
+Writes data/dome/<shot>.json (the dome's curves and profiles, which src/scene.ts uses), the
+registration in analysis/out/capture/<shot>.npz, and QA sheets (the film beside the warped logo) in
 frames/capture/<shot>/.
 """
 
 import argparse
 import json
 import math
+import re
 import subprocess
 from pathlib import Path
 
 import cv2
 import numpy as np
 import SimpleITK as sitk
-from scipy.interpolate import BSpline, PchipInterpolator
 from scipy.optimize import least_squares
-from scipy.sparse import lil_matrix
 
 ROOT = Path(__file__).resolve().parent.parent
 FPS = 24000 / 1001
@@ -52,26 +50,28 @@ SHOTS = {
         "size": (263 / 0.973, 340 / 0.973),
         "center": (952.3, 542.05),
         "times": (0.208, 1.251),
-        # the frames to fit: the collapse is keyframed (from 1.13 s the registration pins the
-        # tile's corner highlights rather than the receding smears, and its 67 px mesh smears them
-        # wider than the film's, so they'd vanish in a jump); the fitted values' B-spline knots
-        # (s apart), and how strongly their curvature is penalised
+        # the frames the curves are fitted to: from 1.13 s the registration pins the tile's corner
+        # highlights rather than the receding smears (and its 67 px mesh spreads them wider than
+        # the film's), so the collapse is set by hand
         "fit": (0.208, 1.01),
-        "knots": 0.125,
-        "smooth": 1.0,
         "seed": 0.6,
         "seedScale": 0.8,
-        # the dome as in src/scene.ts: its centre (world units), its footprint's exponent over reel
-        # time (a circle turning into a squircle), its rim's falloff, and the shot's lensHeight
-        # (fitted heights are stored before it); its radius over reel time, measured off the film's
-        # bright rim line (half its width, at zoom 1)
-        "lens": {
+        "dome": {
+            # world units, as in src/scene.ts; the footprint's exponent at full morph: the film's rim
+            # line fits a superellipse of exponent 3-3.4 (a rounder corner than the icon's own 5)
             "center": (-0.01, 0.0),
-            "exponent": [(0.28, 2.0), (0.33, 3.5), (0.38, 4.7), (0.45, 5.0)],
-            "flat": 16.0,
-            "edge": 0.3,
-            "heightScale": 1.8,
-            "radius": [(0.209, 0.415), (0.25, 0.44), (0.334, 0.455), (0.375, 0.472), (0.417, 0.478), (0.5, 0.489), (0.584, 0.507), (0.667, 0.518), (0.751, 0.526), (0.834, 0.531), (1.001, 0.535), (1.168, 0.54)],
+            "exponent": 3.3,
+            # the profile at settle 0 (a magnifying crown) and 1 (a flat top with a steep rim);
+            # None is fitted
+            "from": {"crown": None, "shoulder": None, "flat": 16.0, "edge": 0.3},
+            "to": {"crown": None, "shoulder": None, "flat": 16.0, "edge": 0.3},
+            # [shot time, value]; None is fitted. The radius is half the width of the film's bright
+            # rim line; the early height (before the registration holds) and the collapse to a
+            # thin layer that keeps the tile's outline are set by hand
+            "radius": [(0.05, 0.1), (0.12, 0.29), (0.21, 0.415), (0.42, 0.478), (0.75, 0.526), (1.17, 0.54)],
+            "morph": [(0.28, 0.0), (0.45, 1.0)],
+            "settle": [(0.21, 0.0), (0.6, None), (1.0, 1.0)],
+            "height": [(0.05, 0.0), (0.12, 0.1), (0.21, None), (0.45, None), (0.75, None), (1.0, None), (1.25, 0.022)],
         },
     },
     "wordmark": {
@@ -82,15 +82,22 @@ SHOTS = {
         "center": (960, 534.5),
         "times": (1.5, 2.96),
         # before 2.04 s the chrome tip and the rod's ripples fill the orb, which no dome fits;
-        # after 2.84 s its echoes fade and the dome collapses (keyframed)
+        # after 2.84 s its echoes fade and it collapses (set by hand)
         "fit": (2.04, 2.84),
-        "knots": 0.15,
-        "smooth": 1.0,
         "seed": 2.2,
         "seedScale": 1.0,
-        # a round dome whose radius and falloff are fitted too; one line of letters barely pins
-        # its height on the frame, so it stays centred there
-        "lens": {"center": (0.0, 0.0), "exponent": [(0.0, 2.0)], "flat": None, "edge": None, "heightScale": 1.3, "radius": None, "pinned": {"shiftY": 0.0}},
+        "dome": {
+            "center": (0.0, 0.0),
+            "exponent": 2.0,
+            # the orb, which settles into a wide, low dome whose soft rim lies on the wordmark's ends
+            "from": {"crown": 0.0, "shoulder": 0.0, "flat": 2.0, "edge": 0.8},
+            "to": {"crown": 0.0, "shoulder": 0.0, "flat": None, "edge": None},
+            # the orb's growth (by eye, off the film) and the collapse are set by hand
+            "radius": [(0.0, 0.15), (0.135, 0.24), (0.295, 0.35), (0.375, 0.4), (0.6, None), (1.375, None), (1.7, 0.8)],
+            "morph": [(0.0, 0.0)],
+            "settle": [(0.375, 0.0), (0.58, 1.0)],
+            "height": [(0.0, 0.0195), (0.135, 0.0585), (0.295, 0.0975), (0.375, 0.1235), (0.6, None), (1.0, None), (1.375, None), (1.62, 0.0)],
+        },
     },
 }
 
@@ -203,12 +210,36 @@ def weight(fixed: np.ndarray, warped: np.ndarray, grid: int) -> np.ndarray:
     return cv2.resize(w, (grid, grid), interpolation=cv2.INTER_AREA)[::-1]
 
 
-def keyed(keys: list[tuple[float, float]], t: float) -> float:
-    """keys interpolated smoothly and without overshoot (monotone cubic), held beyond the ends"""
-    if len(keys) == 1:
-        return float(keys[0][1])
-    ts = [k[0] for k in keys]
-    return float(PchipInterpolator(ts, [k[1] for k in keys])(min(max(t, ts[0]), ts[-1])))
+def interpolate(keys: list[tuple[float, float]], t: np.ndarray) -> np.ndarray:
+    """the renderer's keyframe curve (interpolate in src/driver.ts): a monotone cubic through the
+    keys that eases out of the first and into the last, held flat beyond them"""
+    ts = np.array([k[0] for k in keys], float)
+    ys = np.array([k[1] for k in keys], float)
+    t = np.asarray(t, float)
+    n = len(keys)
+    if n == 1:
+        return np.full(t.shape, ys[0])
+    d = np.diff(ys) / np.diff(ts)
+    m = np.zeros(n)
+    m[1:-1] = (d[:-1] + d[1:]) / 2
+    for i in range(n - 1):
+        if d[i] == 0:
+            m[i] = m[i + 1] = 0
+            continue
+        a, b = m[i] / d[i], m[i + 1] / d[i]
+        if a < 0:
+            m[i] = 0
+        if b < 0:
+            m[i + 1] = 0
+        r = math.hypot(a, b)
+        if r > 3:
+            m[i], m[i + 1] = 3 * a * d[i] / r, 3 * b * d[i] / r
+    i = np.clip(np.searchsorted(ts, t, side="left") - 1, 0, n - 2)
+    h = ts[i + 1] - ts[i]
+    s = np.clip((t - ts[i]) / h, 0, 1)
+    s2, s3 = s * s, s * s * s
+    y = (2 * s3 - 3 * s2 + 1) * ys[i] + (s3 - 2 * s2 + s) * h * m[i] + (-2 * s3 + 3 * s2) * ys[i + 1] + (s3 - s2) * h * m[i + 1]
+    return np.where(t <= ts[0], ys[0], np.where(t >= ts[-1], ys[-1], y))
 
 
 def lens_z(x: np.ndarray, y: np.ndarray, v: dict, center: tuple[float, float]) -> np.ndarray:
@@ -218,7 +249,7 @@ def lens_z(x: np.ndarray, y: np.ndarray, v: dict, center: tuple[float, float]) -
     e = v["exponent"]
     rho = (np.abs(dx) ** e + np.abs(dy) ** e + 1e-12) ** (1 / e)
     r2 = dx * dx + dy * dy
-    crown = np.maximum(0, 1 - v["crown"] * r2 - v.get("shoulder", 0.0) * r2 * r2)
+    crown = np.exp(-v["crown"] * r2 - v.get("shoulder", 0.0) * r2 * r2)
     fall = np.clip(1 - np.minimum(rho, 1) ** v["flat"], 0, 1) ** v["edge"]
     return v["height"] * crown * fall
 
@@ -238,24 +269,26 @@ def refracted(x: np.ndarray, y: np.ndarray, v: dict, center: tuple[float, float]
     return a * -gx / norm * reach, a * -gy / norm * reach
 
 
-FREE = {"radius": (0.1, 0.9, 0.05), "height": (0.0, 0.8, 0.05), "crown": (0.0, 1.0, 0.2), "shoulder": (0.0, 1.0, 0.2), "flat": (2.0, 20.0, 2.0), "edge": (0.2, 3.0, 0.2), "shiftX": (-0.08, 0.08, 0.02), "shiftY": (-0.08, 0.08, 0.02)}
+# bounds and typical steps of the dome's values
+BOUNDS = {"radius": (0.1, 0.9, 0.05), "height": (0.0, 0.8, 0.05), "morph": (0.0, 1.0, 0.2), "settle": (0.0, 1.0, 0.2), "crown": (0.0, 1.0, 0.2), "shoulder": (0.0, 1.0, 0.2), "flat": (2.0, 20.0, 2.0), "edge": (0.2, 3.0, 0.2)}
+CURVES = ("radius", "height", "morph", "settle")
+PROFILE = ("crown", "shoulder", "flat", "edge")
 
 
-def splines(times: np.ndarray, spacing: float) -> np.ndarray:
-    """the cubic B-spline basis over the frames' times, knots `spacing` s apart (frames x coefficients)"""
-    t0, t1 = float(times[0]), float(times[-1])
-    pieces = max(1, round((t1 - t0) / spacing))
-    knots = np.r_[[t0] * 3, np.linspace(t0, t1, pieces + 1), [t1] * 3]
-    return BSpline.design_matrix(times, knots, 3).toarray()
+def dome_at(dome: dict, t: float) -> dict:
+    """the dome's values at shot time t, as lensState in src/lens.ts"""
+    radius, height, morph, settle = (float(interpolate(dome[c], t)) for c in CURVES)
+    profile = {k: dome["from"][k] + (dome["to"][k] - dome["from"][k]) * settle for k in PROFILE}
+    return {"radius": radius, "height": height, "exponent": 2 + (dome["exponent"] - 2) * morph, "shiftX": 0.0, "shiftY": 0.0, **profile}
 
 
 def fit(name: str, shot: dict) -> None:
-    """the dome over the shot's fitted frames, as smooth trajectories, fitted to the saved registration"""
+    """the dome's free keys and profile values, fitted to every registered frame at once"""
     reg = np.load(ROOT / "analysis" / "out" / "capture" / f"{name}.npz")
-    lens = shot["lens"]
-    center = lens["center"]
+    spec = shot["dome"]
+    center = spec["center"]
     chosen = [k for k, t in enumerate(reg["times"]) if shot["fit"][0] <= t <= shot["fit"][1]]
-    times = reg["times"][chosen]
+    times = reg["times"][chosen] - shot["start"]
     off, weights = reg["offsets"][chosen], reg["weights"][chosen]
     x, y, cw, ch = shot["crop"]
     grid = off.shape[1]
@@ -263,93 +296,105 @@ def fit(name: str, shot: dict) -> None:
         (x - 960) / PX_PER_UNIT + (np.arange(grid) + 0.5) / grid * cw / PX_PER_UNIT,
         -(y + ch - 540) / PX_PER_UNIT + (np.arange(grid) + 0.5) / grid * ch / PX_PER_UNIT,
     )
-    B = splines(times, shot["knots"])
-    # what isn't fitted: the morph's exponent and the measured footprint (smooth through their
-    # keys), and the shot's fixed values
-    known = [
-        {
-            **lens.get("pinned", {}),
-            **{k: lens[k] for k in ("flat", "edge") if lens[k] is not None},
-            **{k: keyed(lens[k], t) for k in ("exponent", "radius") if lens[k] is not None},
-        }
-        for t in times
-    ]
-    keys = [k for k in FREE if k not in known[0]]
-    lo, hi, scale = (np.array([FREE[k][i] for k in keys]) for i in range(3))
 
-    # 1. each frame alone, to seed the joint fit and drop the points that no dome explains
+    # 1. each frame alone, its whole profile free: only to drop the points no dome explains (off by
+    # more than 30 px: the registration's, not the oil's) and to seed the curves
+    free = ["height", "crown", "shoulder", "flat", "edge"] + ([] if None not in [v for _, v in spec["radius"]] else ["radius"])
+    lo, hi, scale = (np.array([BOUNDS[k][i] for k in free]) for i in range(3))
     points, seeds, previous = [], [], None
     for f, t in enumerate(times):
-        w = weights[f]
-        m = w > 0.02
-        if "radius" in known[f]:
+        exponent = 2 + (spec["exponent"] - 2) * float(interpolate(spec["morph"], t))
+        known = {"exponent": exponent, "shiftX": 0.0, "shiftY": 0.0}
+        if "radius" not in free:
+            known["radius"] = float(interpolate(spec["radius"], t))
+        m = weights[f] > 0.02
+        if "radius" in known:
             # only inside the measured footprint
-            e = known[f]["exponent"]
-            m &= (np.abs(X - center[0]) ** e + np.abs(Y - center[1]) ** e) ** (1 / e) < 0.97 * known[f]["radius"]
-        px, py, ox, oy, sw = X[m], Y[m], off[f][..., 0][m], off[f][..., 1][m], np.sqrt(w[m])
+            m &= (np.abs(X - center[0]) ** exponent + np.abs(Y - center[1]) ** exponent) ** (1 / exponent) < 0.97 * known["radius"]
+        px, py, ox, oy, sw = X[m], Y[m], off[f][..., 0][m], off[f][..., 1][m], np.sqrt(weights[f][m])
 
         def residual(u: np.ndarray) -> np.ndarray:
-            qx, qy = refracted(px, py, {**known[f], **dict(zip(keys, u))}, center)
+            qx, qy = refracted(px, py, {**known, **dict(zip(free, u))}, center)
             return np.concatenate([sw * (qx - ox), sw * (qy - oy)])
 
         starts = [previous] if previous is not None else []
-        starts.append(np.array([{"radius": 0.5, "height": 0.15, "crown": 0.5, "shoulder": 0.2, "flat": 6.0, "edge": 0.5}.get(k, 0.0) for k in keys]))
+        starts.append(np.array([{"radius": 0.5, "height": 0.15, "crown": 0.5, "shoulder": 0.2, "flat": 8.0, "edge": 0.5}[k] for k in free]))
         best = min((least_squares(residual, np.clip(s0, lo, hi), bounds=(lo, hi), loss="soft_l1", f_scale=0.02, x_scale=scale) for s0 in starts), key=lambda r: r.cost)
         previous = best.x
-        seeds.append(best.x)
+        seeds.append(dict(zip(free, best.x)))
         miss = np.hypot(*(best.fun / np.concatenate([sw, sw])).reshape(2, -1))
-        # off by more than 30 px after its own fit: the registration's, not the oil's (a smear the
-        # dome explains roughly still counts)
-        keep = miss < max(4 * np.median(miss), 0.055)
-        # at most 3000 points a frame, the same ones on every run
-        index = np.flatnonzero(keep)
-        if len(index) > 3000:
-            index = np.sort(np.random.default_rng(f).choice(index, 3000, replace=False))
-        points.append((px[index], py[index], ox[index], oy[index], sw[index]))
+        keep = np.flatnonzero(miss < max(4 * np.median(miss), 0.055))
+        if len(keep) > 3000:
+            keep = np.sort(np.random.default_rng(f).choice(keep, 3000, replace=False))
+        points.append((px[keep], py[keep], ox[keep], oy[keep], sw[keep]))
 
-    # 2. all frames together: coefficients per key, the curvature of each trajectory penalised
-    n, nk = B.shape[1], len(keys)
-    coef0 = np.clip(np.linalg.lstsq(B, np.array(seeds), rcond=None)[0], lo, hi)
-    weight = math.sqrt(shot["smooth"])
+    # 2. the curves' free keys and the profiles' free values, against all frames at once
+    slots = [(c, i) for c in CURVES for i, (_, v) in enumerate(spec[c]) if v is None]
+    slots += [(end, k) for end in ("from", "to") for k in PROFILE if spec[end][k] is None]
+
+    def seeded(slot: tuple) -> float:
+        what, where = slot
+        if what in CURVES:
+            # the per-frame fits near the key's time (settle: halfway)
+            tk = spec[what][where][0]
+            if what == "settle":
+                return 0.5
+            near = [s.get(what) for t, s in zip(times, seeds) if abs(t - tk) < 0.1 and what in s]
+            return float(np.median(near)) if near else 0.1
+        first, last = seeds[0], seeds[-1]
+        return float((first if what == "from" else last).get(where, 0.5))
+
+    def bound(slot: tuple, i: int) -> float:
+        what, where = slot
+        return BOUNDS[what if what in CURVES else where][i]
+
+    def assemble(u: np.ndarray) -> dict:
+        dome = {**spec, **{c: list(spec[c]) for c in CURVES}, "from": dict(spec["from"]), "to": dict(spec["to"])}
+        for (what, where), value in zip(slots, u):
+            if what in CURVES:
+                dome[what][where] = (dome[what][where][0], float(value))
+            else:
+                dome[what][where] = float(value)
+        return dome
 
     def residuals(u: np.ndarray) -> np.ndarray:
-        coef = u.reshape(n, nk)
-        values = B @ coef
+        dome = assemble(u)
         out = []
-        for f, (px, py, ox, oy, sw) in enumerate(points):
-            qx, qy = refracted(px, py, {**known[f], **dict(zip(keys, values[f]))}, center)
+        for t, (px, py, ox, oy, sw) in zip(times, points):
+            qx, qy = refracted(px, py, dome_at(dome, t), center)
             out += [sw * (qx - ox), sw * (qy - oy)]
-        out.append((weight * (coef[2:] - 2 * coef[1:-1] + coef[:-2]) / scale).ravel())
         return np.concatenate(out)
 
-    rows = sum(2 * len(p[0]) for p in points)
-    sparsity = lil_matrix((rows + (n - 2) * nk, n * nk), dtype=int)
-    row = 0
-    for f, p in enumerate(points):
-        cols = [j * nk + q for j in np.flatnonzero(B[f]) for q in range(nk)]
-        for r in range(row, row + 2 * len(p[0])):
-            sparsity[r, cols] = 1
-        row += 2 * len(p[0])
-    for j in range(n - 2):
-        for q in range(nk):
-            sparsity[row + j * nk + q, [(j + d) * nk + q for d in range(3)]] = 1
-    joint = least_squares(residuals, coef0.ravel(), bounds=(np.tile(lo, n), np.tile(hi, n)), x_scale=np.tile(scale, n), jac_sparsity=sparsity, tr_solver="lsmr")
-    values = B @ joint.x.reshape(n, nk)
+    lo, hi, scale = (np.array([bound(sl, i) for sl in slots]) for i in range(3))
+    u0 = np.clip([seeded(sl) for sl in slots], lo, hi)
+    result = least_squares(residuals, u0, bounds=(lo, hi), x_scale=scale)
+    dome = assemble(result.x)
 
-    frames = []
-    for f, t in enumerate(times):
-        px, py, ox, oy, sw = points[f]
-        v = {**known[f], **dict(zip(keys, values[f]))}
-        qx, qy = refracted(px, py, v, center)
-        miss = float(np.sqrt(np.sum(sw**2 * ((qx - ox) ** 2 + (qy - oy) ** 2)) / np.sum(sw**2) / 2))
-        rest = float(np.sqrt(np.sum(sw**2 * (ox**2 + oy**2)) / np.sum(sw**2) / 2))
-        print(f"{t:.3f}s  {rest:.3f} -> {miss:.3f}  " + " ".join(f"{k}={value:.3f}" for k, value in v.items()), flush=True)
-        stored = {**v, "height": v["height"] / lens["heightScale"]}
-        frames.append({"t": round(float(t), 3), "lens": {k: round(float(value), 5) for k, value in stored.items()}, "score": round(miss, 5)})
-    out = ROOT / "data" / "fit"
+    total, rest_total, weight_total = 0.0, 0.0, 0.0
+    for t, (px, py, ox, oy, sw) in zip(times, points):
+        qx, qy = refracted(px, py, dome_at(dome, t), center)
+        w2 = sw**2
+        miss = float(np.sqrt(np.sum(w2 * ((qx - ox) ** 2 + (qy - oy) ** 2)) / np.sum(w2) / 2))
+        rest = float(np.sqrt(np.sum(w2 * (ox**2 + oy**2)) / np.sum(w2) / 2))
+        total, rest_total, weight_total = total + miss**2, rest_total + rest**2, weight_total + 1
+        v = dome_at(dome, t)
+        print(f"{t + shot['start']:.3f}s  {rest:.3f} -> {miss:.3f}  " + " ".join(f"{k}={v[k]:.3f}" for k in ("radius", "height", "exponent", *PROFILE)), flush=True)
+    out = ROOT / "data" / "dome"
     out.mkdir(parents=True, exist_ok=True)
-    (out / f"{name}.json").write_text(json.dumps({"shot": name, "start": shot["start"], "frames": frames}, indent=2) + "\n")
-    print(f"wrote data/fit/{name}.json ({len(frames)} frames)")
+    record = {
+        "shot": name,
+        "center": list(center),
+        "exponent": spec["exponent"],
+        "from": {k: round(v, 4) for k, v in dome["from"].items()},
+        "to": {k: round(v, 4) for k, v in dome["to"].items()},
+        **{c: [[round(t, 4), round(v, 4)] for t, v in dome[c]] for c in CURVES},
+        # how far the film's refraction is from none, and from this dome (rms, world units)
+        "fit": {"frames": len(times), "rest": round(math.sqrt(rest_total / weight_total), 4), "miss": round(math.sqrt(total / weight_total), 4)},
+    }
+    # one line per key
+    text = re.sub(r"\[\s+(-?[\d.]+),\s+(-?[\d.]+)\s+\]", r"[\1, \2]", json.dumps(record, indent=2))
+    (out / f"{name}.json").write_text(text + "\n")
+    print(f"wrote data/dome/{name}.json ({len(slots)} values fitted to {len(times)} frames)")
 
 
 def main() -> None:

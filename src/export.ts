@@ -57,11 +57,10 @@ export async function exportMp4({
   const engine = await Engine.create(canvas, film, {
     width,
     height,
-    simRows: Math.round(height * (576 / 1080)),
     preserveDrawingBuffer: true
   })
   for (const [i, p] of params.entries())
-    engine.setParams(i, { ...p, subframes: Math.max(p.subframes, 6) })
+    engine.setParams(i, { ...p, subframes: Math.max(p.subframes, 8) })
 
   const output = new Output({
     format: new Mp4OutputFormat({ fastStart: 'in-memory' }),

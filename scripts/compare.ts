@@ -1,4 +1,4 @@
-// The comparison harness: renders the simulation at reference timestamps and sets each frame
+// The comparison harness: renders the film at reference timestamps and sets each frame
 // under the matching frame of Apple's film, for tuning by eye. Times are film (reel) times; the
 // YouTube cut runs 69.334 s later (measured by cross-correlating the two clips' brightness).
 //

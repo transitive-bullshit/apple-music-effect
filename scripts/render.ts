@@ -5,7 +5,7 @@
 //
 //   pnpm render --stills 0.3,1.9 --out renders/stills
 //   pnpm render --from 0 --to 4 --out renders/sting.mp4
-//   pnpm render --w 3840 --h 2160 --query rows=1080 --out renders/sting-4k.mp4
+//   pnpm render --w 3840 --h 2160 --out renders/sting-4k.mp4
 
 import { spawn } from 'node:child_process'
 import { once } from 'node:events'
@@ -27,7 +27,7 @@ const { values: args } = parseArgs({
     w: { type: 'string', default: '1920' },
     h: { type: 'string', default: '1080' },
     out: { type: 'string', default: 'renders' },
-    /** extra page parameters, e.g. "rows=720" for a finer oil simulation */
+    /** extra page parameters, e.g. "p.wavelengths=24" */
     query: { type: 'string', default: '' },
     /** frame transfer from the page: jpeg (q 0.97, fast) or png (lossless, slower) */
     transfer: { type: 'string', default: 'png' }

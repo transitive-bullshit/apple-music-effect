@@ -1,9 +1,8 @@
 import { describe, expect, test } from 'vitest'
 
-import { interpolate, rigHeight } from '../src/driver'
-import { applyFits, FITS } from '../src/fits'
-import { lensState } from '../src/lens'
-import { APPLE_MUSIC, type LensKey, paramsFor } from '../src/scene'
+import { type DomeState, domeAt } from '../src/dome'
+import { interpolate } from '../src/driver'
+import { APPLE_MUSIC, paramsFor, type Shot } from '../src/scene'
 
 /** the largest first and second differences of f, sampled every dt over [a, b] */
 function differences(
@@ -51,30 +50,48 @@ function rough(curves: Record<string, (t: number) => number>, length: number) {
   )
 }
 
-const film = applyFits(APPLE_MUSIC, FITS)
+/** the key lists that animate a shot: the whole of its motion */
+function animated(shot: Shot) {
+  return [
+    shot.dome.radius,
+    shot.dome.height,
+    shot.dome.morph,
+    shot.dome.settle,
+    shot.fade,
+    shot.zoom,
+    shot.colour,
+    shot.ring,
+    shot.ball?.lift
+  ].filter((keys) => keys && keys.length > 1)
+}
 
 describe('the animation is smooth (continuous in value and slope)', () => {
-  for (const shot of film.shots) {
+  for (const shot of APPLE_MUSIC.shots) {
     const p = paramsFor(shot)
     const length = shot.end - shot.start
 
     test(`${shot.name}: every value of the dome`, () => {
-      const keys = Object.keys(lensState(shot, p, 0)) as LensKey[]
+      const keys = Object.keys(domeAt(shot, p, 0)) as (keyof DomeState)[]
       const curves = Object.fromEntries(
-        keys.map((key) => [key, (t: number) => lensState(shot, p, t)[key]])
+        keys.map((key) => [key, (t: number) => domeAt(shot, p, t)[key]])
       )
       expect(rough(curves, length)).toEqual([])
     })
 
-    test(`${shot.name}: fade, zoom, colour, the rig`, () => {
+    test(`${shot.name}: fade, zoom, colour, the rig's tip`, () => {
       const curves = {
         fade: (t: number) => interpolate(shot.fade, t),
         zoom: (t: number) => interpolate(shot.zoom, t),
         colour: (t: number) => (shot.colour ? interpolate(shot.colour, t) : 1),
-        rig: (t: number) => rigHeight(shot.rig, shot.wobble, t),
-        push: (t: number) => rigHeight(shot.push, shot.pushWobble, t)
+        lift: (t: number) => (shot.ball ? interpolate(shot.ball.lift, t) : 0)
       }
       expect(rough(curves, length)).toEqual([])
+    })
+
+    test(`${shot.name}: a few curves with a few keys move everything`, () => {
+      const curves = animated(shot)
+      expect(curves.length).toBeLessThanOrEqual(8)
+      for (const keys of curves) expect(keys!.length).toBeLessThanOrEqual(9)
     })
   }
 

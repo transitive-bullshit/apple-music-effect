@@ -165,8 +165,8 @@
             <figcaption>
               The orb: a small, steep dome magnifies the logo about three times.
               <label
-                ><input type="checkbox" data-toggle="lensHeight" data-off="0" />
-                no dome</label
+                ><input type="checkbox" data-toggle="dome" data-off="0" /> no
+                dome</label
               >
             </figcaption>
           </figure>
@@ -232,16 +232,14 @@
         </p>
         <ol>
           <li>
-            <strong>The rig.</strong> Keyframes, measured off Apple's film, give
-            the dome's size, height and shape over time, the glass tile's
-            height, and the camera's zoom. The two notes of the sting set when
-            each shot starts.
-          </li>
-          <li>
-            <strong>The oil.</strong> Around the dome, a shallow-water
-            simulation on the GPU carries the waves: the oil's depth and flow on
-            a staggered grid, with viscosity for thick oil, a moving floor where
-            the tile rises, and a soft edge so waves leave the frame.
+            <strong>The dome.</strong> The oil's surface is one dome per shot,
+            shaped by a formula: a round crown that magnifies, a shoulder that
+            steepens it, and a steep rim in the shape of the icon or a circle.
+            Four smooth curves animate it (its size, its height, its turn from a
+            circle into the icon's shape, and its settling from a magnifying
+            bubble into a flat top with a steep rim), fitted to how Apple's film
+            bends the logo. The two notes of the sting set when each shot
+            starts.
           </li>
           <li>
             <strong>The optics.</strong> For each pixel, a ray from the camera
@@ -253,14 +251,14 @@
           </li>
           <li>
             <strong>The camera.</strong> Several subframes per frame give motion
-            blur, then bloom, grain and a vignette. Every frame is a pure
-            function of time, so the preview, stills and exported videos agree.
+            blur, then bloom and a vignette. Every frame is a pure function of
+            time, so the preview, stills and exported videos agree.
           </li>
         </ol>
         <p>
           To match the film, we measured it: the time offset between the YouTube
           cut and Apple's reel (by cross-correlating their brightness), the
-          note's magnification frame by frame (from the gap between its stems),
+          refraction frame by frame (by warping the clean logo onto each frame),
           the zoom-out, the tile's size. A comparison harness renders the
           simulation at the film's timestamps and sets each frame beside
           Apple's.

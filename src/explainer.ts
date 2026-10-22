@@ -44,8 +44,7 @@ async function main() {
             }
       const engine = await Engine.create(canvas, zoomed, {
         width: Number(canvas.dataset.w ?? 640),
-        height: Number(canvas.dataset.h ?? 360),
-        simRows: 360
+        height: Number(canvas.dataset.h ?? 360)
       })
       return { canvas, engine }
     })

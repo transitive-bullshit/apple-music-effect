@@ -212,32 +212,3 @@ export function createImageTexture(
   if (ext) gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, 8)
   return tex
 }
-
-/** a single-channel float texture (R32F, linear-filtered where supported), for distance fields */
-export function createFloatTexture(
-  gl: WebGL2RenderingContext,
-  width: number,
-  height: number,
-  data: Float32Array
-) {
-  const tex = gl.createTexture()!
-  gl.bindTexture(gl.TEXTURE_2D, tex)
-  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
-  // R16F filters everywhere; distance fields don't need more precision than that
-  gl.texImage2D(
-    gl.TEXTURE_2D,
-    0,
-    gl.R16F,
-    width,
-    height,
-    0,
-    gl.RED,
-    gl.FLOAT,
-    data
-  )
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-  return tex
-}

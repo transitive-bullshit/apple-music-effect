@@ -8,7 +8,7 @@ import { createServer } from 'vite'
 export interface RenderPageOptions {
   width: number
   height: number
-  /** extra page parameters, e.g. "rows=720" */
+  /** extra page parameters, e.g. "p.wavelengths=24" */
   query?: string
 }
 

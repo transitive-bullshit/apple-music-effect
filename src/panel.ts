@@ -46,7 +46,7 @@ export function createPanel(engine: Engine, hooks: PanelHooks) {
       },
       Quality: {
         Wavelengths: [d.wavelengths, 3, 32, 1],
-        'Motion blur': [d.subframes, 1, 8, 1],
+        'Motion blur': [d.subframes, 1, 16, 1],
         _collapsed: true
       },
       Export: {
@@ -72,7 +72,7 @@ export function createPanel(engine: Engine, hooks: PanelHooks) {
   kit.subscribe((v) => {
     for (const [i, b] of base.entries()) {
       const next: Partial<Params> = {
-        lensHeight: b.lensHeight * v.Oil.Dome,
+        dome: b.dome * v.Oil.Dome,
         depth: b.depth * v.Oil.Depth,
         dispersion: b.dispersion * v.Oil.Dispersion,
         softbox: b.softbox * v.Light.Highlights,

@@ -1,6 +1,4 @@
-// What moves the oil, as pure functions of shot time: the rig's height (keyframes), the note's
-// wobble on top of it (a damped oscillation at the note's frequency, slowed to picture time), and
-// the camera's zoom.
+// Keyframe curves: everything that moves is one, as a pure function of shot time.
 
 /** [time in s, value] */
 export type Key = readonly [number, number]
@@ -61,45 +59,4 @@ function tangents(keys: readonly Key[]) {
     }
   }
   return m
-}
-
-export interface Wobble {
-  /** shot time the note starts */
-  start: number
-  /** oscillation frequency in picture time, Hz */
-  freq: number
-  /** peak displacement, in world units */
-  amp: number
-  /** seconds for the oscillation to fall to 1/e */
-  decay: number
-  /** seconds to fade in */
-  attack: number
-}
-
-/** the note's damped oscillation of the rig, zero before it starts */
-export function wobble(w: Wobble | null, t: number) {
-  if (!w || w.amp === 0) return 0
-  const u = t - w.start
-  if (u <= 0) return 0
-  // smoothstep, so the oscillation's speed has no kink where the fade ends
-  const a = w.attack > 0 ? Math.min(1, u / w.attack) : 1
-  const fadeIn = a * a * (3 - 2 * a)
-  return (
-    w.amp * fadeIn * Math.exp(-u / w.decay) * Math.sin(2 * Math.PI * w.freq * u)
-  )
-}
-
-/** the rig's height at shot time t: keyframes plus the note's wobble */
-export function rigHeight(keys: readonly Key[], w: Wobble | null, t: number) {
-  return interpolate(keys, t) + wobble(w, t)
-}
-
-/** the rig's vertical velocity, by central difference */
-export function rigVelocity(
-  keys: readonly Key[],
-  w: Wobble | null,
-  t: number,
-  h = 1e-4
-) {
-  return (rigHeight(keys, w, t + h) - rigHeight(keys, w, t - h)) / (2 * h)
 }

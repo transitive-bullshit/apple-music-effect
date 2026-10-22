@@ -9,7 +9,6 @@ import './player.css'
 
 import { resolveLogos } from './brand'
 import { Engine } from './engine'
-import { applyFits, FITS, parseFit } from './fits'
 import { createPlayer } from './player'
 import { APPLE_MUSIC } from './scene'
 import { loadTimeline } from './timeline'
@@ -43,20 +42,7 @@ async function main() {
     const src = params.get(name)
     if (src) overrides[name] = src
   }
-  // the dome fitted to the film (data/fit); ?fit=renders/fit-test/icon.json,... tries others, and
-  // ?fit=none the keyframes alone
-  const fitUrls = params.get('fit')?.split(',').filter(Boolean) ?? []
-  const fits =
-    fitUrls[0] === 'none'
-      ? []
-      : fitUrls.length
-        ? await Promise.all(
-            fitUrls.map(async (url) =>
-              parseFit(await (await fetch(url)).json())
-            )
-          )
-        : FITS
-  const film = applyFits(await resolveLogos(APPLE_MUSIC, overrides), fits)
+  const film = await resolveLogos(APPLE_MUSIC, overrides)
 
   if (params.get('mode') === 'render') {
     const canvas = document.createElement('canvas')
@@ -65,7 +51,6 @@ async function main() {
     const engine = await Engine.create(canvas, film, {
       width: Number(params.get('w') ?? 1920),
       height: Number(params.get('h') ?? 1080),
-      simRows: Number(params.get('rows') ?? 576),
       preserveDrawingBuffer: true
     })
     window.engine = engine
@@ -83,8 +68,7 @@ async function main() {
   const canvas = document.querySelector<HTMLCanvasElement>('.stage canvas')!
   const engine = await Engine.create(canvas, film, {
     width: Number(params.get('w') ?? 1280),
-    height: Number(params.get('h') ?? 720),
-    simRows: Number(params.get('rows') ?? 432)
+    height: Number(params.get('h') ?? 720)
   })
   window.engine = engine
   applyQueryParams(engine, params)

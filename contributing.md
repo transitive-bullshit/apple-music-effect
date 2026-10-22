@@ -21,7 +21,7 @@ ffmpeg -i reference/instagram/apple-music-reel.mp4 -vn -ac 1 -ar 48000 media/sti
 uv run --group analysis python analysis/transcribe.py reference/youtube/apple-music-identity.mkv
 uv run --group analysis python analysis/timeline.py media/sting-reel.wav
 
-# the dome per frame, fitted to the refraction measured in the film (writes data/fit/<shot>.json;
+# the dome's curves, fitted to the refraction measured in the film (writes data/dome/<shot>.json;
 # the registration takes ~20 min a shot, --fit refits its saved result in seconds)
 uv run --group analysis python analysis/capture.py icon
 uv run --group analysis python analysis/capture.py icon --fit
@@ -39,7 +39,7 @@ Without them the player and renders fall back to the demo brand in `public/demo/
 pnpm dev                                    # the player and the explainer
 pnpm render --stills 0.6,2.2 --out renders/stills
 pnpm render --from 0 --to 4 --out renders/sting.mp4                       # 1080p with the sting
-pnpm render --w 3840 --h 2160 --query rows=1080 --out renders/sting-4k.mp4  # 4K, finer oil
+pnpm render --w 3840 --h 2160 --out renders/sting-4k.mp4                    # 4K
 pnpm render --query "icon=demo/icon.svg&wordmark=demo/wordmark.svg" --out renders/demo.mp4
 
 # beside Apple's film: reference frames on top, the simulation below
@@ -50,17 +50,17 @@ pnpm compare --shot wordmark --step 0.125 --crop 410,330,1100,420
 pnpm score --times 0.6,0.8,1 --query "p0.lensEdge=0.4" --query "p0.lensEdge=0.6"
 ```
 
-Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot) to override a parameter, `?icon=` and `?wordmark=` to swap logos, `?fit=a.json,b.json` to try other fitted domes (`?fit=none` for the keyframes alone), and in render mode `?debug=1..5` (surface height, slope, glass, ray offset, offset direction) with `&debugScale=`.
+Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot) to override a parameter, `?icon=` and `?wordmark=` to swap logos, and in render mode `?debug=1,2,4,5` (surface height, slope, ray offset, offset direction) with `&debugScale=`.
 
 ## Where things live
 
 | Part | Code |
 | --- | --- |
-| The film: shots, keyframes, every parameter | `src/scene.ts` |
-| The dome fitted to the film, per frame | `data/fit/`, `src/fits.ts`, `analysis/capture.py` |
+| The film: shots, their curves, every parameter | `src/scene.ts` |
+| The dome: its curves, fitted to the film | `src/dome.ts`, `data/dome/`, `analysis/capture.py` |
 | Keyframe interpolation, the rig's wobble | `src/driver.ts` |
 | Engine: oil stepping, subframes, bloom | `src/engine.ts` |
-| Shaders: shallow water, dome, optics, finish | `src/shaders.ts` |
+| Shaders: the dome, optics, finish | `src/shaders.ts` |
 | WebGL2 helpers | `src/gl.ts` |
 | Logos: rasterizing, masks, distance fields | `src/assets.ts` |
 | Fitting any logo to a shot, the demo brand | `src/brand.ts`, `public/demo/` |
@@ -72,10 +72,10 @@ Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot
 
 ## Tuning a moment
 
-1. Find the shot and its keyframes in `src/scene.ts` (shot time = film time − the shot's start).
+1. Find the shot and its curves in `src/scene.ts` (shot time = film time − the shot's start). The dome's four curves and two profiles are in `data/dome/<shot>.json`, written by `analysis/capture.py`: edit their key times and hand-set values at the top of the script, then refit (`--fit`, seconds).
 2. `pnpm compare --times <film times> --crop …` to see it beside the film; try values with `--query "p0.name=value"` first.
-3. For the dome, measure rather than guess: `analysis/capture.py` fits it to the film's refraction (its footprint, rim falloff and fitted keys are set at the top of the script); the keyframes in `src/scene.ts` cover only the frames outside the fit.
-4. Move what works into `src/scene.ts` and compare again.
+3. Keep it to a few curves with a few keys each: more keys bring back the jitter (`test/smooth.test.ts` caps them).
+4. Move what works into `src/scene.ts` (or the script) and compare again.
 
 ## Tests
 
