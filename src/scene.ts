@@ -20,6 +20,8 @@ export interface Params {
   ringWavelength: number
   /** how far outside the dome's rim the wave on its edge runs, units */
   ringOffset: number
+  /** how fast the wave train's crests travel outward, units/s (negative: inward) */
+  ringSpeed: number
   /** wavelength of the rod's ripples, units */
   rippleWavelength: number
   /** speed of the rod's ripples, units/s */
@@ -79,6 +81,7 @@ export const DEFAULT_PARAMS: Params = {
   ringWidth: 0.05,
   ringWavelength: 0,
   ringOffset: 0,
+  ringSpeed: 0,
   rippleWavelength: 0.055,
   rippleSpeed: 0.4,
   rippleReach: 0.9,
@@ -244,13 +247,16 @@ export const APPLE_MUSIC: Film = {
       // an orb around the rig's chrome tip that widens and settles into a wide, low dome whose
       // soft rim lies on the wordmark's ends, smearing them outward, then falls flat
       dome: parseDome(wordmarkDome),
-      // the echoes on the dome's edge while it stands (shot time = reel time - 1.465): gentle, so
-      // they bend only the wordmark's ends into short lines, as in the film
+      // the echoes on the dome's edge (shot time = reel time - 1.465): gentle while the wide dome
+      // stands, so they bend only the wordmark's ends; then, as it flattens and its edge pulls in,
+      // the copies of the ends that drift and fade by 3.08 s (shot 1.62)
       ring: [
         [0.5, 0],
-        [0.7, 0.004],
-        [1.45, 0.002],
-        [1.8, 0]
+        [0.7, 0.003],
+        [1.0, 0.003],
+        [1.2, 0.0035],
+        [1.45, 0.0025],
+        [1.62, 0]
       ],
       // the orb's rings, strongest as it appears
       ripple: { height: 0.005, decay: 0.5 },
@@ -275,6 +281,8 @@ export const APPLE_MUSIC: Film = {
       params: {
         ringWavelength: 0.06,
         ringWidth: 0.06,
+        // the wave travels outward, so the echo bars keep moving as they fade
+        ringSpeed: 0.08,
         // the film's key and walls barely show in this dome; a ring light around the lens draws the
         // orb's ripples as rings all the way round. Once it settles into the wide dome, nothing
         // reflects: its ripple shows only where it bends the wordmark, fading out above and below

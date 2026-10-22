@@ -37,6 +37,7 @@ uniform vec3 uLens;        // radius (half-size), height, superellipse exponent
 uniform vec3 uLensProfile; // crown, flat, shoulder
 uniform float uLensEdge;
 uniform vec4 uLensRing;    // the wave on its edge: amplitude, width, wavelength (0: a single crest), and how far outside the rim it runs
+uniform float uLensRingPhase; // how far its crests have travelled, in wavelengths × 2π
 uniform vec4 uRipple;      // amplitude, wavelength, phase, reach (fraction of the dome's radius)
 uniform float uReveal;     // 1: the logo shows only within the dome's footprint
 uniform float uRevealSoft;
@@ -62,7 +63,7 @@ float lensZ(vec2 p) {
   float rho = pow(pow(d.x, uLens.z) + pow(d.y, uLens.z), 1.0 / uLens.z);
   float dist = (rho - 1.0) * uLens.x;
   float e = (dist - uLensRing.w) / max(uLensRing.y, 1e-4);
-  float train = uLensRing.z > 0.0 ? cos(6.2831853 * (dist - uLensRing.w) / uLensRing.z) : 1.0;
+  float train = uLensRing.z > 0.0 ? cos(6.2831853 * (dist - uLensRing.w) / uLensRing.z - uLensRingPhase) : 1.0;
   float ring = uLensRing.x * exp(-e * e) * train;
   if (rho >= 1.0 || uLens.y <= 0.0) return ring;
   float r2 = dot(d, d);

@@ -82,8 +82,8 @@ SHOTS = {
         "center": (960, 534.5),
         "times": (1.5, 2.96),
         # before 2.04 s the chrome tip and the rod's ripples fill the orb, which no dome fits;
-        # after 2.84 s its echoes fade and it collapses (set by hand)
-        "fit": (2.04, 2.84),
+        # after 2.4 s the film's ends turn into thin echo bars the registration can't resolve
+        "fit": (2.04, 2.4),
         "seed": 2.2,
         "seedScale": 1.0,
         "dome": {
@@ -92,11 +92,14 @@ SHOTS = {
             # the orb, which settles into a wide, low dome whose soft rim lies on the wordmark's ends
             "from": {"crown": 0.0, "shoulder": 0.0, "flat": 2.0, "edge": 0.8},
             "to": {"crown": 0.0, "shoulder": 0.0, "flat": None, "edge": None},
-            # the orb's growth (by eye, off the film) and the collapse are set by hand
-            "radius": [(0.0, 0.15), (0.135, 0.24), (0.295, 0.35), (0.375, 0.4), (0.6, None), (1.375, None), (1.7, 0.8)],
+            # the orb's growth (by eye, off the film) and the end are set by hand: from 2.4 s (shot
+            # 0.94) the film's smears retract into the letters by about 2.6 s, so the dome flattens
+            # and its edge pulls in to just past the wordmark's ends, where its wave draws the echo
+            # bars that drift in and fade by 3 s
+            "radius": [(0.0, 0.15), (0.135, 0.24), (0.295, 0.35), (0.375, 0.4), (0.6, None), (0.94, None), (1.2, 0.65), (1.5, 0.62), (1.8, 0.6)],
             "morph": [(0.0, 0.0)],
             "settle": [(0.375, 0.0), (0.58, 1.0)],
-            "height": [(0.0, 0.0195), (0.135, 0.0585), (0.295, 0.0975), (0.375, 0.1235), (0.6, None), (1.0, None), (1.375, None), (1.62, 0.0)],
+            "height": [(0.0, 0.0195), (0.135, 0.0585), (0.295, 0.0975), (0.375, 0.1235), (0.6, None), (0.94, None), (1.2, 0.012), (1.6, 0.0)],
         },
     },
 }

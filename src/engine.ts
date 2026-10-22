@@ -249,6 +249,11 @@ export class Engine {
       uLensProfile: [d.crown, d.flat, d.shoulder],
       uLensEdge: d.edge,
       uLensRing: [d.ring, p.ringWidth, p.ringWavelength, p.ringOffset],
+      // the wave's crests travel outward at ringSpeed
+      uLensRingPhase:
+        p.ringWavelength > 0
+          ? (2 * Math.PI * p.ringSpeed * local) / p.ringWavelength
+          : 0,
       uRipple: [
         d.ripple,
         p.rippleWavelength,
