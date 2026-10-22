@@ -279,16 +279,18 @@ export const APPLE_MUSIC: Film = {
         [0.375, 0.2],
         [0.58, 1]
       ],
-      // the orb's ripples and round outline reflect the studio; once it settles into the wide
-      // dome the outline fades slowly, as in the film (still faint at 2.4 s), leaving the
+      // the orb's ripples and round outline reflect the studio, fading from 1.7 s and nearly gone by
+      // 1.9 s, as the film's round light does (measured off the band, frame by frame), leaving the
       // ripple only where it bends the wordmark's ends
       gloss: [
-        [0.45, 1],
-        [0.7, 0.3],
-        [1.05, 0]
+        [0.25, 1],
+        [0.42, 0.1],
+        [0.6, 0]
       ],
       zoom: [[0, 1]],
       params: {
+        // the film's wordmark barely glows
+        bloom: 0.012,
         ringWavelength: 0.06,
         ringWidth: 0.06,
         // the wave travels outward, so the echo bars keep moving as they fade

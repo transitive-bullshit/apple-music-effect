@@ -92,14 +92,15 @@ SHOTS = {
             # the orb, which settles into a wide, low dome whose soft rim lies on the wordmark's ends
             "from": {"crown": 0.0, "shoulder": 0.0, "flat": 2.0, "edge": 0.8},
             "to": {"crown": 0.0, "shoulder": 0.0, "flat": None, "edge": None},
-            # the orb's growth (by eye, off the film) and the end are set by hand: from 2.4 s (shot
+            # the orb's growth (by eye, off the film; its height so that the light it spreads off the
+            # wordmark's band matches the film's) and the end are set by hand: from 2.4 s (shot
             # 0.94) the film's smears retract into the letters by about 2.6 s, so the dome flattens
             # and its edge pulls in to just past the wordmark's ends, where its wave draws the echo
             # bars that drift in and fade by 3 s
             "radius": [(0.0, 0.15), (0.135, 0.24), (0.295, 0.35), (0.375, 0.4), (0.6, None), (0.94, None), (1.2, 0.65), (1.5, 0.62), (1.8, 0.6)],
             "morph": [(0.0, 0.0)],
             "settle": [(0.375, 0.0), (0.58, 1.0)],
-            "height": [(0.0, 0.0195), (0.135, 0.0585), (0.295, 0.0975), (0.375, 0.1235), (0.6, None), (0.94, None), (1.2, 0.012), (1.6, 0.0)],
+            "height": [(0.0, 0.0136), (0.135, 0.041), (0.295, 0.0682), (0.375, 0.0864), (0.6, None), (0.94, None), (1.2, 0.012), (1.6, 0.0)],
         },
     },
 }
