@@ -1,0 +1,172 @@
+/* The prompt page: one dark sheet, like the film. A single column, the prompt as the one object set
+   apart, its header (with the copy button) pinned while you read. */
+
+:root {
+  --bg: #07080b;
+  --surface: #0d0f14;
+  --line: #1c2029;
+  --fg: #e8ebf1;
+  --muted: #868c9b;
+  --cyan: #7fd0ff;
+  --display: 'Archivo', 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  --body: 'IBM Plex Sans', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 1.0625rem/1.62 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sheet {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding-block: 3.5rem 4rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 2rem;
+}
+
+header {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.meta {
+  margin: 0;
+  font: 500 0.75rem/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1 {
+  margin: 0;
+  font: 800 clamp(2rem, 6.4vw, 3.1rem) / 1.02 var(--display);
+  font-stretch: 125%;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  /* the oil's dispersion: blue and amber fringes either side of white */
+  text-shadow:
+    -0.045em 0 0 rgb(127 208 255 / 0.55),
+    0.045em 0 0 rgb(255 180 107 / 0.5);
+}
+
+.prompt {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  min-width: 0;
+}
+
+.from {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem clamp(1.1rem, 4vw, 2rem);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+}
+
+.byline {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: baseline;
+}
+
+.who {
+  font-weight: 500;
+}
+
+.to {
+  font: 400 0.8125rem/1.4 var(--mono);
+  color: var(--muted);
+}
+
+.copy {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.55rem 1rem;
+  font: 500 0.9375rem/1 var(--body);
+  color: var(--bg);
+  background: var(--fg);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.copy:hover {
+  background: #fff;
+}
+
+.copy:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.copy svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.copy .check,
+.copy[data-state='copied'] .clip {
+  display: none;
+}
+
+.copy[data-state='copied'] .check {
+  display: block;
+}
+
+.text {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem clamp(1.1rem, 4vw, 2rem) 1.75rem;
+}
+
+.text p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.text a {
+  font: 400 0.875em/1.5 var(--mono);
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.text a:hover {
+  text-decoration: underline;
+}
+
+.text a:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy {
+    transition: none;
+  }
+}

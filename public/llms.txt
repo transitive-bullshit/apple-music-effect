@@ -8,6 +8,7 @@ Apple filmed its mark in a tray of mineral oil, rippled by a two-note sting. Thi
 
 - [Player](https://apple-music-effect.transitivebullsh.it/): plays the 4-second effect live. Drop in your own icon and wordmark, tune the oil and the light, and export a 1080p or 4K MP4 in the browser.
 - [Explainer](https://apple-music-effect.transitivebullsh.it/explainer): how the original was filmed, the physics behind it (refraction through a dome of oil, dispersion, the reveal), how this recreation works, and how to make your own in code or in a dish of oil.
+- [Prompt](https://apple-music-effect.transitivebullsh.it/prompt): the prompt to Claude Code (Opus 5.5) that started the project, verbatim.
 
 ## How it works
 

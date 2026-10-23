@@ -4,7 +4,7 @@
 
 - Node 24+, pnpm, [uv](https://docs.astral.sh/uv/), ffmpeg, Google Chrome (renders drive the installed Chrome through Playwright), and ImageMagick for the comparison sheets.
 - `pnpm install` and `uv sync`. The analysis tools need the optional group: `uv run --group analysis …` (librosa, mlx-whisper on Apple Silicon, OpenCV, potracer, matplotlib).
-- `pnpm dev` serves through [portless](https://portless.sh) at https://apple-music-effect.localhost; `PORTLESS=0 pnpm dev` serves http://127.0.0.1:5215. The player is `/`, the explainer `/explainer.html`.
+- `pnpm dev` serves through [portless](https://portless.sh) at https://apple-music-effect.localhost; `PORTLESS=0 pnpm dev` serves http://127.0.0.1:5215. The player is `/`, the explainer `/explainer.html`, the prompt `/prompt.html`.
 - No API keys or environment variables.
 
 ## Reference material (not in git)
@@ -69,6 +69,7 @@ Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot
 | Fitting any logo to a shot; Apple's traced logos, the demo brand | `src/brand.ts`, `public/apple/`, `public/demo/` |
 | Player, panel, MP4 export | `src/player.ts`, `src/panel.ts`, `src/export.ts` |
 | Explainer | `explainer.html`, `src/explainer.ts` |
+| The original prompt, with a copy button | `prompt.html`, `src/prompt.ts` |
 | Headless render, comparison, scoring | `scripts/render.ts`, `scripts/compare.ts`, `scripts/score.ts` |
 | Analysis: transcript, sting timeline, tracing, capture | `analysis/` |
 | What the film shows, the physics, how it was matched | `docs/effect-analysis.md` |

@@ -15,12 +15,13 @@ export default defineConfig({
   // this fixed one is for PORTLESS=0 pnpm dev
   server: { host: '127.0.0.1', port: 5215, strictPort: true },
   preview: { host: '127.0.0.1', port: 5215 },
-  // two pages: the player and the explainer
+  // three pages: the player, the explainer and the prompt
   build: {
     rollupOptions: {
       input: {
         main: resolve('index.html'),
-        explainer: resolve('explainer.html')
+        explainer: resolve('explainer.html'),
+        prompt: resolve('prompt.html')
       }
     }
   },
