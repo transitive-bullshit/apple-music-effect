@@ -47,7 +47,7 @@ SHOTS = {
     "icon": {
         "start": 0.0,
         "crop": (560, 140, 800, 800),
-        "logo": "reference/brand/traced/note-yt.svg",
+        "logo": "public/apple/note.svg",
         "size": (263 / 0.973, 340 / 0.973),
         "center": (952.3, 542.05),
         "times": (0.208, 1.251),
@@ -88,7 +88,7 @@ SHOTS = {
     "wordmark": {
         "start": 1.465,
         "crop": (380, 300, 1160, 480),
-        "logo": "reference/brand/traced/wordmark-yt.svg",
+        "logo": "public/apple/wordmark.svg",
         "size": (588, 121),
         "center": (960, 534.5),
         "times": (1.5, 2.96),

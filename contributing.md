@@ -27,11 +27,11 @@ uv run --group analysis python analysis/capture.py icon
 uv run --group analysis python analysis/capture.py icon --fit
 
 # the new note and wordmark, traced from still frames of the film (frames/yt from ffmpeg)
-uv run --group analysis python analysis/trace.py frames/ref-icon/r-1.24.png --roi 815,365,280,355 --out reference/brand/traced/note-yt.svg
-uv run --group analysis python analysis/trace.py frames/yt/f_00151.png … frames/yt/f_00172.png --out reference/brand/traced/wordmark-yt.svg
+uv run --group analysis python analysis/trace.py frames/ref-icon/r-1.24.png --roi 815,365,280,355 --out public/apple/note.svg
+uv run --group analysis python analysis/trace.py frames/yt/f_00151.png … frames/yt/f_00172.png --out public/apple/wordmark.svg
 ```
 
-Without them the player and renders fall back to the demo brand in `public/demo/`.
+The player and renders don't need them: they play our traces of the note and wordmark (`public/apple/`, committed). The X demo brand in `public/demo/` is for the explainer and trying your own logos.
 
 ## Commands
 
@@ -66,7 +66,7 @@ Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot
 | Shaders: the dome, optics, finish | `src/shaders.ts` |
 | WebGL2 helpers | `src/gl.ts` |
 | Logos: rasterizing, masks, distance fields | `src/assets.ts` |
-| Fitting any logo to a shot, the demo brand | `src/brand.ts`, `public/demo/` |
+| Fitting any logo to a shot; Apple's traced logos, the demo brand | `src/brand.ts`, `public/apple/`, `public/demo/` |
 | Player, panel, MP4 export | `src/player.ts`, `src/panel.ts`, `src/export.ts` |
 | Explainer | `explainer.html`, `src/explainer.ts` |
 | Headless render, comparison, scoring | `scripts/render.ts`, `scripts/compare.ts`, `scripts/score.ts` |
@@ -90,9 +90,9 @@ Any page takes `?p.name=value` (every shot) or `?p1.name=value` (the second shot
 
 The site deploys to Vercel from GitHub: every push to `main` builds production (https://apple-music-effect.transitivebullsh.it), other branches get preview URLs. `vercel.json` sets the Vite build, clean URLs and the caching (hashed `assets/` immutable for a year, other static files a day, HTML revalidated on every visit). The project pins pnpm through Corepack (`ENABLE_EXPERIMENTAL_COREPACK=1`), and Web Analytics loads only on the built site (`src/analytics.ts`). The share image, icons, `robots.txt`, `sitemap.xml` and `llms.txt` live in `public/`.
 
-Deployed, there's no reference material, so the site shows the demo brand, with the sting (the build copies the file `data/timeline.json` names to the same path in `dist/`).
+Deployed, there's no reference material: the player shows our traces of Apple's logos, with the sting (the build copies the file `data/timeline.json` names to the same path in `dist/`).
 
 ## Not in the repo, on purpose
 
-- `reference/` and `media/`: Apple's film, reel and logos (including the traced ones), which are Apple's copyrighted work and trademarks. The sting is the one file in `media/` that's committed.
+- `reference/` and `media/`: Apple's film, reel and official logos, which are Apple's copyrighted work and trademarks. The sting is the one file in `media/` that's committed, and our traces of the note and wordmark live in `public/apple/`.
 - `frames/`, `renders/`, `dist/`: regenerable output.

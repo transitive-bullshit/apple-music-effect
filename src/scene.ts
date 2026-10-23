@@ -188,8 +188,8 @@ export function paramsFor(shot: Shot): Params {
 }
 
 // The Apple Music sting, matched to the reel (reel time; the YouTube cut is reel + 69.334 s).
-// Placements are measured off the film's 1080p frames (1 unit = 540 px). Logos are local
-// reference assets (reference/brand, not in git).
+// Placements are measured off the film's 1080p frames (1 unit = 540 px). The logos are our traces
+// of the film's note and wordmark (public/apple).
 
 export const APPLE_MUSIC: Film = {
   name: 'apple-music',
@@ -203,7 +203,7 @@ export const APPLE_MUSIC: Film = {
       end: 1.465,
       // the new note, traced from the settled frame at 1.24 s (camera zoom 0.973 there)
       logo: {
-        src: 'reference/brand/traced/note-yt.svg',
+        src: 'apple/note.svg',
         mode: 'alpha',
         center: [-0.0143, -0.0038],
         width: 263 / 540 / 0.973
@@ -277,7 +277,7 @@ export const APPLE_MUSIC: Film = {
       start: 1.465,
       end: 4,
       logo: {
-        src: 'reference/brand/traced/wordmark-yt.svg',
+        src: 'apple/wordmark.svg',
         mode: 'alpha',
         center: [(960 - 960) / 540, -(534.5 - 540) / 540],
         width: 588 / 540

@@ -1,6 +1,5 @@
-// Logos for each shot: Apple's (local reference assets, when present), the demo brand otherwise, or
-// one the viewer brings. Any logo is fitted to its shot by its visible bounds, so padding in an
-// SVG's viewBox doesn't shrink it.
+// Logos for each shot: Apple's (our traces in public/apple), or one the viewer brings. Any logo is
+// fitted to its shot by its visible bounds, so padding in an SVG's viewBox doesn't shrink it.
 
 import { imageAspect, loadImage } from './assets'
 import type { Film, LogoSpec } from './scene'
@@ -91,22 +90,7 @@ export async function fitLogo(
   return { src, mode: m, center: [cx, cy], width }
 }
 
-/** the demo brand that ships with the site (public/demo), for when Apple's assets aren't here */
-const DEMO: Record<string, string> = {
-  icon: 'demo/icon.svg',
-  wordmark: 'demo/wordmark.svg'
-}
-
-async function reachable(src: string) {
-  try {
-    await loadImage(src)
-    return true
-  } catch {
-    return false
-  }
-}
-
-/** the film with its logos resolved: Apple's where the reference assets load, the demo brand elsewhere */
+/** the film with its logos resolved: Apple's, or the viewer's overrides */
 export async function resolveLogos(
   film: Film,
   overrides: Record<string, string> = {}
@@ -115,17 +99,7 @@ export async function resolveLogos(
     film.shots.map(async (shot) => {
       const custom = overrides[shot.name]
       if (custom) return { ...shot, logo: await fitLogo(shot.name, custom) }
-      // Apple's reference assets never reach a build (dist), so a built site uses the demo brand
-      // without asking for them
-      if (!import.meta.env.PROD && (await reachable(shot.logo.src))) return shot
-      return {
-        ...shot,
-        logo: await fitLogo(
-          shot.name,
-          DEMO[shot.name] ?? DEMO.wordmark!,
-          'alpha'
-        )
-      }
+      return shot
     })
   )
   return { ...film, shots }
